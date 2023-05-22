@@ -1,0 +1,12 @@
+# Comentarios comienzan con el símbolo de almohadilla #
+
+# Ignorar archivos de compilación
+*.o
+*.class
+*.exe
+
+
+# Ignorar archivos y directorios específicos
+/node_modules/
+package-lock.json
+package.json
