@@ -1,0 +1,72 @@
+<form [formGroup]="videojuegoForm" novalidate (ngSubmit)="isCreate ? crearVideojuego(): actualizarVideojuego()">
+  <input type="hidden" formControlName="id" />
+  <mat-card class="shipping-card">
+    <mat-card-header>
+      <mat-card-title>{{titleForm}} Videojuego</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput #nombreVideojuego maxlength="20" placeholder="Nombre" formControlName="nombre">
+            <mat-hint align="end">{{nombreVideojuego.value.length}} / 20</mat-hint>
+            <mat-error *ngIf="videojuegoForm.controls['nombre'].hasError('required')">
+              Nombre es <strong>requerido</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Descripción" formControlName="descripcion">
+            <mat-error *ngIf="videojuegoForm.controls['descripcion'].hasError('required')">
+              Descripción es <strong>requerido</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Precio" formControlName="precio">
+            <mat-error *ngIf="videojuegoForm.controls['precio'].hasError('required')">
+              Precio es <strong>requerido</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col" *ngIf="generosList">
+          <mat-form-field class="full-width">
+            <mat-select placeholder="Generos" formControlName="generos" multiple>
+              <mat-option *ngFor="let g of generosList" [value]="g.id">
+                {{ g.nombre }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="videojuegoForm.controls['generos'].hasError('required')">
+              Generos es <strong>requerido</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col">
+          <mat-label>Publicar</mat-label>
+          <mat-radio-group formControlName="publicar">
+            <mat-radio-button [value]="true">Sí</mat-radio-button>
+            <mat-radio-button [value]="false">No</mat-radio-button>
+          </mat-radio-group>
+          <mat-error *ngIf="videojuegoForm.controls['publicar'].touched &&
+           videojuegoForm.controls['publicar'].hasError('required')">
+            Publicar es <strong>requerido</strong>
+          </mat-error>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" type="submit">Guardar</button>
+    </mat-card-actions>
+  </mat-card>
+</form>

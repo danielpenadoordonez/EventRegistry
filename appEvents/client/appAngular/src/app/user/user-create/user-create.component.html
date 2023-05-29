@@ -1,0 +1,62 @@
+<form [formGroup]="formCreate"  novalidate>
+<mat-card class="shipping-card">
+  <mat-card-header>
+    <mat-card-title>Crear Usuario </mat-card-title>
+  </mat-card-header> 
+  <mat-card-content>
+    <div class="row">
+      <div class="col">
+        <mat-form-field class="full-width">
+          <mat-label>Nombre</mat-label>
+          <input matInput type="text" placeholder="Nombre usuario" formControlName="nombre" />
+         <mat-error *ngIf="errorHandling('nombre', 'required')">
+            Nombre es <strong>requerido</strong>
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <mat-form-field class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="text" placeholder="Email usuario" formControlName="email" />
+         <mat-error *ngIf="errorHandling('email', 'required')">
+            Email es <strong>requerido</strong>
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <mat-form-field class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hide ? 'password' : 'text'" placeholder="Password usuario" formControlName="password" />
+          <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+         <mat-error *ngIf="errorHandling('password', 'required')">
+            Password es <strong>requerido</strong>
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <mat-form-field  class="full-width">
+          <mat-label>Rol</mat-label>
+            <mat-select placeholder="Rol" formControlName="role">
+              <mat-option *ngFor="let r of roles" [value]="r.id">
+                {{ r.nombre }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+      </div>
+    </div>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-raised-button color="primary" (click)="submitForm()">Registrar</button>
+    <button mat-raised-button color="accent" type="reset" (click)="onReset()">Cancelar</button>
+  </mat-card-actions>
+</mat-card>
+</form>
+
