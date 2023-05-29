@@ -1,0 +1,28 @@
+<mat-card class="shipping-card">
+    <mat-card-content>
+      <div id="htmlData"  class="contenedor">
+        <h2 class="titulo">Total de ventas por Producto</h2>
+        <table class="tabla">
+            <thead>
+          <tr class="table-primary">
+            <th>Videojuego</th>
+            <th>Total Ventas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of datos">
+            <th>{{ item.nombre }}</th>
+            <td>&dollar;{{ item.total }}</td>
+          </tr>
+        </tbody>
+        </table>
+      </div>
+      <div class="col-md-4 text-right">
+        <button mat-flat-button color="accent" (click)="openPDF()" >
+            Descargar PDF
+            <mat-icon>download</mat-icon> 
+            </button> 
+      </div>
+    </mat-card-content>
+    </mat-card>
+   

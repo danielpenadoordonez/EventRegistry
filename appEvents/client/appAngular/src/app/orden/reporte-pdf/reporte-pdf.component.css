@@ -1,0 +1,43 @@
+.titulo {
+  color: #04aa6d;
+  font-weight: bold;
+}
+.contenedor {
+  margin-top: 25px !important;
+  padding-top: 50px;
+  padding-right: 50px;
+  padding-left: 50px;
+  margin-right: auto;
+  margin-left: auto;
+}
+.tabla {
+  background-color: white;
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 1.5em;
+  font-family: sans-serif;
+  min-width: 400px;
+  color: black;
+}
+.tabla thead tr th {
+  background-color: #04aa6d;
+  color: white;
+  text-align: left;
+}
+.tabla tr:nth-child(even) {
+  background-color: #abb2b9;
+}
+.tabla td,
+.tabla th {
+  border: 1px solid #777;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.tabla tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.tabla tbody tr:last-of-type {
+  border-bottom: 2px solid #009879;
+}
