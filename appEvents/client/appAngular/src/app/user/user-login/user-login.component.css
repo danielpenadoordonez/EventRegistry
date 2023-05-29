@@ -3,8 +3,13 @@ mat-form-field.mat-form-field {
 }
 
 .shipping-card {
- 
+  color: aliceblue;
 }
+
+.mat-card-title{
+ color: aliceblue;
+}
+
 .full-width {
   width: 100%;
 }
@@ -31,4 +36,15 @@ mat-form-field.mat-form-field {
 
 .col:last-child {
   margin-right: 0;
+}
+
+.mat-card{
+  background-color: #377AAA;
+  border: 2px solid;
+  border-radius: 15px;
+}
+
+.mat-raised-button:hover{
+  text-decoration: underline;
+  cursor: pointer;
 }
