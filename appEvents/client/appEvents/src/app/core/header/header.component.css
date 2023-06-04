@@ -1,0 +1,14 @@
+.example-spacer {
+    flex: 1 1 auto;
+  }
+  
+  
+  [mat-menu-item].is-active,
+  [mat-list-item].is-active {
+    background: hsla(0, 0%, 34%, 0.1) !important;
+  }
+
+  .mat-toolbar {
+    background-color: #020632;
+  }
+  
