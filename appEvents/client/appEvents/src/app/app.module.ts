@@ -12,22 +12,24 @@ import { VideojuegoModule } from './videojuego/videojuego.module';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { OrdenModule } from './orden/orden.module';
 import { HttpErrorInterceptorService } from './share/http-error-interceptor.service';
+import { EventoModule } from './evento/evento.module';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
-    BrowserModule, // importar HttpClientModule después BrowserModule. 
-    // comunicarse con un servidor a través del protocolo HTTP 
-    HttpClientModule, // Debe agregar el import respectivo // importar otras dependencias que sean necesario cargar en el componente principal.
+    BrowserModule, // * importar HttpClientModule después BrowserModule. 
+    // * comunicarse con un servidor a través del protocolo HTTP 
+    HttpClientModule, // * Debe agregar el import respectivo // importar otras dependencias que sean necesario cargar en el componente principal.
     
-    // importar los módulos creados propios en orden 
+    // ? importar los módulos creados propios en orden 
     CoreModule, 
+    EventoModule,
     ShareModule, 
     HomeModule, 
     UserModule, 
     VideojuegoModule, 
     OrdenModule,
-    // al final el gestor de las rutas principal 
+    // ? al final el gestor de las rutas principal 
     AppRoutingModule,
   ],
   providers: [ { provide: HTTP_INTERCEPTORS, 

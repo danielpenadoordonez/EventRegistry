@@ -30,8 +30,10 @@ export class UserLoginComponent implements OnInit {
     //* https://angular.io/guide/reactive-forms
    //* https://angular.io/api/forms/Validators 
     this.formulario = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
+      email: [null, Validators.compose([
+        Validators.required
+      ])],
+      password: [null, Validators.required],
     });
   }
   ngOnInit(): void {

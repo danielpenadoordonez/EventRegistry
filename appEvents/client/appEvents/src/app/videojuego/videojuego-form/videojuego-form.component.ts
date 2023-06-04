@@ -26,6 +26,7 @@ export class VideojuegoFormComponent implements OnInit{
       this.listaGeneros();
     
   }
+
   ngOnInit(): void {
     //Verificar si se envio un id por parametro para crear formulario para actualizar
     this.activeRouter.params.subscribe((params:Params)=>{
