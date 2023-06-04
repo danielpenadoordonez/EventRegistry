@@ -7,3 +7,8 @@
   [mat-list-item].is-active {
     background: hsla(0, 0%, 34%, 0.1) !important;
   }
+
+  .mat-toolbar {
+    background-color: #020632;
+  }
+  
