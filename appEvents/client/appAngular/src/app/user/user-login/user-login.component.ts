@@ -9,6 +9,7 @@ import { NotificacionService, TipoMessage } from 'src/app/share/notification.ser
   templateUrl: './user-login.component.html',
   styleUrls: ['./user-login.component.css'],
 })
+
 export class UserLoginComponent implements OnInit {
   hide=true;
   formulario: FormGroup;
@@ -23,6 +24,7 @@ export class UserLoginComponent implements OnInit {
   ) {
     this.reactiveForm();
   }
+
   // Definir el formulario con su reglas de validación
   reactiveForm() {
     //* https://angular.io/guide/reactive-forms
@@ -39,7 +41,7 @@ export class UserLoginComponent implements OnInit {
   mensajes() {
     let register = false; //* Si se registra
     let auth=''; //* El auth guard realiza esto
-    //Obtener parámetros de la URL
+    //* Obtener parámetros de la URL
     this.route.queryParams.subscribe((params) => {
       register = params['register']==='true' || false;
       auth = params['auth'] || '';
