@@ -4,7 +4,7 @@
     <button mat-icon-button   [matMenuTriggerFor]="menu1"  class="example-icon" >
       <mat-icon>menu</mat-icon>
     </button>
-    <span>Videojuegos</span>
+    <span>Navegación</span>
     <mat-menu #menu1="matMenu">
       <button mat-menu-item [routerLink]="'/'" [routerLinkActive]="'mat-raised-button'">Inicio</button>
       <button mat-menu-item [routerLink]="'/videojuego'" [routerLinkActive]="'mat-raised-button'">Videojuegos</button>
@@ -29,11 +29,6 @@
       <!-- Enlaces de la aplicación -->
        <!-- https://fonts.google.com/icons -->
        <!--https://material.angular.io/guide/typography-->
-      
-     <button mat-icon-button matBadgeColor="accent" [matBadge]="qtyItems.toString()" 
-       [routerLink]="'/orden'" [routerLinkActive]="'mat-raised-button'"  aria-label="Cantidad">
-     <mat-icon>shopping_cart</mat-icon>
-   </button> |   
 
       <span class="mat-caption" *ngIf="isAutenticated"> {{currentUser.user.email}}</span> 
     <button mat-icon-button [matMenuTriggerFor]="menu3">

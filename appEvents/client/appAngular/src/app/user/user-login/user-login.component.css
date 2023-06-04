@@ -6,8 +6,8 @@ mat-form-field.mat-form-field {
   color: aliceblue;
 }
 
-.mat-card-title{
- color: aliceblue;
+.mat-card-title {
+  color: aliceblue;
 }
 
 .full-width {
@@ -38,13 +38,53 @@ mat-form-field.mat-form-field {
   margin-right: 0;
 }
 
-.mat-card{
-  background-color: #377AAA;
+.mat-card {
+  background-color: #377aaa;
   border: 2px solid;
   border-radius: 15px;
 }
 
-.mat-raised-button:hover{
+mat-card-actions button {
+  opacity: 0.7;
+}
+
+#btnLogin {
+  color: aliceblue;
+  background-color: #5eafe8;
+}
+
+#btnCancelar {
+  color: aliceblue;
+  background-color: red;
+}
+
+.mat-raised-button:hover {
   text-decoration: underline;
   cursor: pointer;
+  opacity: 1;
+}
+
+.matInput {
+  font-family: Graphie, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+}
+
+mat-label {
+  font-size: large;
+}
+
+mat-card-content div {
+  padding-top: 5px;
+  padding-bottom: 2px;
+}
+
+div a {
+  color: aliceblue;
+  opacity: 0.5;
+  text-decoration: none;
+}
+
+div a:hover {
+  opacity: 1;
+  text-decoration: underline;
 }
