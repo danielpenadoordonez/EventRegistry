@@ -14,11 +14,11 @@ export class AuthGuard implements CanActivate {
   currentUser: any;
   constructor(private authService: AuthenticationService,
     private router: Router) {
-    //Subscribirse para obtener si esta autenticado
+    //* Subscribirse para obtener si esta autenticado
     this.authService.isAuthenticated.subscribe(
       (valor) => (this.isAuthenticated = valor)
     );
-    //Subscribirse para obtener el usuario autenticado
+    //* Subscribirse para obtener el usuario autenticado
     this.authService.currentUser.subscribe((x) => (this.currentUser = x));
   }
 
@@ -32,11 +32,11 @@ export class AuthGuard implements CanActivate {
 
   }
 
-  //Verificar que el rol del usuario coincida
-  //con alguno de los indicados
+  //* Verificar que el rol del usuario coincida
+  //* con alguno de los indicados
   checkUserLogin(route: ActivatedRouteSnapshot, url: any): boolean {
     if (this.isAuthenticated) {
-      const userRole = this.currentUser.user.role;
+      const userRole = this.currentUser.user.perfil; //! Cambiar aqui
       //roles.length && roles.indexOf(verify.role)===-1
       if (route.data['roles'].length && !route.data['roles'].includes(userRole)) {
         this.router.navigate(['/usuario/login'], {

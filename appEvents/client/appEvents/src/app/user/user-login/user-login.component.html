@@ -7,13 +7,22 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <mat-label>Username</mat-label>
-            <input matInput type="text" placeholder="Nombre de usuario" formControlName="email" />
-           <mat-error *ngIf="errorHandling('email', 'required')">
+            <mat-label title="Nombre de usuario">Username</mat-label>
+            <input matInput #username="" type="text" placeholder="Nombre de usuario" formControlName="username" pattern="^[a-zA-Z0-9_.-]*$" minlength="5" maxlength="16" required="true" />
+            <!-- ! Sirve para controlar los lenght -->
+            <mat-hint>{{ username.value.length }} / 16</mat-hint>
+            <!-- ? Validaciones en el HTML pá -->
+           <mat-error *ngIf="errorHandling('username', 'required')">
               El nombre de usuario es <strong>requerido</strong>
             </mat-error>
-            <mat-error *ngIf="errorHandling('email','email')">
+            <mat-error *ngIf="errorHandling('username','pattern')">
               Verifique el <strong>formato</strong> del nombre de usuario
+            </mat-error>
+            <mat-error *ngIf="errorHandling('username','minlength')">
+              Verifique la <strong>longitud mínima</strong> del nombre de usuario
+            </mat-error>
+            <mat-error *ngIf="errorHandling('username','maxlength')">
+              Verifique la <strong>longitud máxima</strong> del nombre de usuario
             </mat-error>
           </mat-form-field>
         </div>
@@ -22,12 +31,19 @@
         <div class="col">
           <mat-form-field class="full-width">
           <mat-label>Password</mat-label>
-          <input matInput [type]="hide ? 'password' : 'text'" placeholder="Digite su contraseña" formControlName="password" />
+          <input matInput #password="" [type]="hide ? 'password' : 'text'" placeholder="Digite su contraseña" formControlName="password" minlength="8" maxlength="32" required="true" />
           <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide" [title]="hide ? 'Mostrar Contraseña' : 'Ocultar Contraseña'">
             <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
           </button>
+          <mat-hint>{{ password.value.length }} / 32</mat-hint>
          <mat-error *ngIf="errorHandling('password', 'required')">
-            Password es <strong>requerido</strong>
+            La contraseña es <strong>requerida</strong>
+          </mat-error>
+          <mat-error *ngIf="errorHandling('password','minlength')">
+            Verifique la <strong>longitud mínima</strong> de la contraseña
+          </mat-error>
+          <mat-error *ngIf="errorHandling('password','maxlength')">
+            Verifique la <strong>longitud máxima</strong> de la contraseña
           </mat-error>
         </mat-form-field>
         </div>
