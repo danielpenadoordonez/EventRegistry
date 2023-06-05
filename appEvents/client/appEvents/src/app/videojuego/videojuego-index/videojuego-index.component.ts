@@ -35,6 +35,7 @@ export class VideojuegoIndexComponent {
         this.datos = data;
       });
   }
+
   detalleVideojuego(id:number){
     const dialogConfig=new MatDialogConfig();
     dialogConfig.disableClose=false;
@@ -43,6 +44,7 @@ export class VideojuegoIndexComponent {
     };
     this.dialog.open(VideojuegoDetailComponent,dialogConfig);
   }
+  
   comprar(id:number){
     this.gSevice
     .get('videojuego',id)
