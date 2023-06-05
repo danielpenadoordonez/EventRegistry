@@ -11,7 +11,7 @@ const routes: Routes = [
     component: OrdenIndexComponent,
     canActivate: [AuthGuard],
     data: {
-      roles: ['ADMIN'],
+      roles: ['Administrador'],
     },
   },
   {

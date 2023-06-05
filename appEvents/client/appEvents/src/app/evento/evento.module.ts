@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 
 import { EventoRoutingModule } from './evento-routing.module';
 import { MatInputModule } from '@angular/material/input';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCardModule } from '@angular/material/card';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { FormEventoComponent } from './form-evento/form-evento.component';
 import { EventoAllComponent } from './evento-all/evento-all.component';
 import { MatTableModule } from '@angular/material/table';
@@ -31,12 +33,14 @@ import { ReportePdfComponent } from './reporte-pdf/reporte-pdf.component';
   imports: [
     CommonModule,
     EventoRoutingModule,
+    MatGridListModule,
     MatInputModule,
     MatButtonModule,
     MatSelectModule,
     MatRadioModule,
     MatCardModule,
     ReactiveFormsModule,
+    MatIconModule,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
