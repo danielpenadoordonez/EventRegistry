@@ -11,9 +11,6 @@
       {{ datos.estado == 1 ? 'Abierto <i class="bx bx-lock-open bx-tada"></i>' :
       'Cerrado <i class="bx bxs-lock bx-tada"></i>' }}
     </h4>
-    <ul *ngIf="datos.generos">
-      <li *ngFor="let item of datos.generos">{{ item.nombre }}</li>
-    </ul>
   </mat-dialog-content>
 
   <mat-dialog-actions> </mat-dialog-actions>

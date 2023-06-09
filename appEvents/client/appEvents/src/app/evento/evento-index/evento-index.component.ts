@@ -7,7 +7,7 @@ import { CartService } from 'src/app/share/cart.service';
 import { NotificacionService, TipoMessage } from 'src/app/share/notification.service';
 import { EventoDetailComponent } from '../evento-detail/evento-detail.component';
 import { AuthenticationService } from 'src/app/share/authentication.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-evento-index',
@@ -25,7 +25,8 @@ export class EventoIndexComponent implements OnInit {
     private dialog: MatDialog,
     private notificacion: NotificacionService,
     private authService: AuthenticationService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.listaEventos();
   }
@@ -62,9 +63,11 @@ export class EventoIndexComponent implements OnInit {
     this.dialog.open(EventoDetailComponent, dialogConfig);
   }
 
-  //? Recuerde que esto puede desactivarse por temas de fecha y rol
+  //* Editar un evento por su id y redigir
   editarEvento(id: number) {
-    //* Recuerde que en el formulario es tanto para create como update pá
+    this.router.navigate(['/evento/update', id], {
+      relativeTo: this.route,
+    });
   }
 
 }
