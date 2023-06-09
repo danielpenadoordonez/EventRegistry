@@ -1,3 +1,50 @@
 .full-width-table {
   width: 100%;
 }
+
+.mat-card{
+  background-color: rgb(20, 128, 223);
+}
+
+.mat-table, .mat-paginator{
+  background-color: #5672A8;
+}
+
+.mat-fab{
+  background-color: aliceblue;
+  opacity: 0.8;
+}
+
+.mat-fab .mat-icon{
+  color: black;
+  opacity: 0.6;
+}
+
+.mat-fab:hover{
+  opacity: 1;
+}
+
+.mat-fab:hover .mat-icon:hover{
+  opacity: 1;
+}
+
+
+.mat-mini-fab{
+  background-color: aliceblue;
+  opacity: 0.8;
+}
+
+.mat-mini-fab .mat-icon{
+  color: black;
+  opacity: 0.5;
+}
+
+.mat-mini-fab:hover{
+  opacity: 1;
+}
+
+.mat-mini-fab:hover .mat-icon{
+  opacity: 1;
+}
+
+

@@ -8,6 +8,7 @@ import { GenericService } from 'src/app/share/generic.service';
   templateUrl: './videojuego-detail.component.html',
   styleUrls: ['./videojuego-detail.component.css']
 })
+
 export class VideojuegoDetailComponent implements OnInit {
   datos:any;
   datosDialog:any;
@@ -25,6 +26,7 @@ export class VideojuegoDetailComponent implements OnInit {
       this.obtenerVideojuego(this.datosDialog.id);
     }
   }
+  
   obtenerVideojuego(id:any){
     this.gService
     .get('videojuego',id)

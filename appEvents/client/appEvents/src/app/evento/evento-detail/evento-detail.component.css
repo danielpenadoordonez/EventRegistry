@@ -1,0 +1,28 @@
+.mat-dialog-container {
+    background-color: #f2f2f2;
+  }
+
+.mat-icon-button{
+    background-color: #5671a86c;
+}
+
+.mat-icon-button:hover{
+    background-color: #5671a8;
+}
+
+.mat-icon{
+ color: aliceblue;
+ opacity: 0.5;
+}
+
+.mat-icon:hover{
+    opacity: 1;
+}
+
+.mat-dialog-actions button {
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+  }
