@@ -37,7 +37,8 @@ export class EventoAllComponent implements AfterViewInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
         console.log(data);
-        this.datos = data;
+        //* Ordenamos por fecha
+        this.datos = data.sort((a, b) => a.date.getTime() - b.date.getTime());
         this.dataSource = new MatTableDataSource(this.datos);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
@@ -61,8 +62,8 @@ export class EventoAllComponent implements AfterViewInit {
   //? Se puede hacer siempre y cuando el evento esté abierto
   //* Sirve para registrar la asistencia
   editarPadron(id: any) {
-    this.router.navigate(['/evento/update-padron/'],{
-      queryParams: {id: id}
+    this.router.navigate(['/evento/update-padron/'], {
+      queryParams: { id: id }
     });
   }
 
@@ -72,13 +73,31 @@ export class EventoAllComponent implements AfterViewInit {
       //* Obtener la data
       console.log(data);
     })
-
+    this.refreshData();
   }
 
   //* Generar reporte del evento
   generarReporte(id: any) {
-    this.router.navigate(['/evento/reportePDF/'],{
-      queryParams: {id: id}
+    this.router.navigate(['/evento/reportePDF/'], {
+      queryParams: { id: id }
     });
   }
+
+  //* Método encargado de refrescar la Data
+  refreshData() {
+    this.gService
+      .list('get-eventos/')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: any) => {
+        console.log(data);
+        this.datos = data.sort((a, b) => a.date.getTime() - b.date.getTime());
+        this.dataSource = new MatTableDataSource(this.datos);
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+      });
+    //* Si no un refresh page de los normales
+    //? this.location.reload();
+    //? private location: Location -> Constructor
+  }
+
 }
