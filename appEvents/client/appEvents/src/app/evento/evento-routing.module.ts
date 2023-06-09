@@ -5,6 +5,7 @@ import { EventoAllComponent } from './evento-all/evento-all.component';
 import { EventoIndexComponent } from './evento-index/evento-index.component';
 import { EventoDetailComponent } from './evento-detail/evento-detail.component';
 import { ReportePdfComponent } from './reporte-pdf/reporte-pdf.component';
+import { FormPadronComponent } from './form-padron/form-padron.component';
 
 const routes: Routes = [
   //! Respetar orden de las rutas - WARNING
@@ -24,10 +25,6 @@ const routes: Routes = [
     component: EventoAllComponent
   },
   {
-    path: 'evento/reportePDF',
-    component: ReportePdfComponent
-  },
-  {
     path: 'evento/create',
     component: FormEventoComponent
   },
@@ -38,7 +35,15 @@ const routes: Routes = [
   {
     path: 'evento/update/:id',
     component: FormEventoComponent
-  }
+  },
+  {
+    path: 'evento/update-padron/:id',
+    component: FormPadronComponent
+  },
+  {
+    path: 'evento/reportePDF/:id',
+    component: ReportePdfComponent
+  },
 ];
 
 @NgModule({

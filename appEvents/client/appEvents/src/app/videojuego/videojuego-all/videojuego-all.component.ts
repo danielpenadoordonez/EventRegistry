@@ -11,6 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './videojuego-all.component.html',
   styleUrls: ['./videojuego-all.component.css']
 })
+
 export class VideojuegoAllComponent implements AfterViewInit {
   datos:any;
   destroy$:Subject<boolean>= new Subject<boolean>();
@@ -43,10 +44,12 @@ export class VideojuegoAllComponent implements AfterViewInit {
         this.dataSource.paginator = this.paginator;
       });
   }
+
   ngOnDestroy(){
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }
+  
   actualizarVideojuego(id: number) {
     this.router.navigate(['/videojuego/update', id], {
       relativeTo: this.route,

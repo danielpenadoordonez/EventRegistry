@@ -20,6 +20,7 @@ import {MatDialogModule} from "@angular/material/dialog";
 import { EventoIndexComponent } from './evento-index/evento-index.component';
 import { EventoDetailComponent } from './evento-detail/evento-detail.component';
 import { ReportePdfComponent } from './reporte-pdf/reporte-pdf.component';
+import { FormPadronComponent } from './form-padron/form-padron.component';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { ReportePdfComponent } from './reporte-pdf/reporte-pdf.component';
     EventoAllComponent,
     EventoIndexComponent,
     EventoDetailComponent,
-    ReportePdfComponent
+    ReportePdfComponent,
+    FormPadronComponent
   ],
   imports: [
     CommonModule,
