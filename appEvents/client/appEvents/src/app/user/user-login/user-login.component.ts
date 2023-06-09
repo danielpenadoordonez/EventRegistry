@@ -12,8 +12,8 @@ import { NotificacionService, TipoMessage } from 'src/app/share/notification.ser
 })
 
 export class UserLoginComponent implements OnInit {
-  hide = true;
-  formulario: FormGroup;
+  hide = true; //* Para esconder la contraseña
+  formularioLogin : FormGroup; //* Formulario
   makeSubmit: boolean = false;
   infoUsuario: any;
   constructor(
@@ -29,9 +29,9 @@ export class UserLoginComponent implements OnInit {
   //* Definir el formulario con su reglas de validación
   //? Recuerde colocarlo en el html igualmente
   reactiveForm() {
-    this.formulario = this.fb.group({
+    this.formularioLogin = this.fb.group({
       username: [null, Validators.compose([
-        Validators.required, Validators.pattern('^[a-zA-Z0-9_.-]*$'), Validators.minLength(5), Validators.maxLength(16)
+        Validators.required, Validators.pattern(/^[a-zA-Z0-9_.-]*$/), Validators.minLength(5), Validators.maxLength(16)
       ])],
       password: [null, Validators.compose([
         Validators.required, Validators.minLength(8), Validators.maxLength(32)
@@ -69,18 +69,18 @@ export class UserLoginComponent implements OnInit {
   }
 
   onReset() {
-    this.formulario.reset();
+    this.formularioLogin.reset();
   }
 
   submitForm() {
     this.makeSubmit = true;
 
     //* Validación
-    if (this.formulario.invalid) {
+    if (this.formularioLogin.invalid) {
       //* Notificar
       this.notificacion.mensaje(
         'Aviso - Usuario',
-        'Ha ocurrido un error a la hora de enviar el formulario, verifique los campos',
+        'Ha ocurrido un error a la hora de enviar el formularioLogin, verifique los campos',
         TipoMessage.warning
       );
       return;
@@ -89,7 +89,7 @@ export class UserLoginComponent implements OnInit {
     //? WARNING, recuerde cambiar la ruta global de las APIs y la ruta de dicha API en FLASK
     //! La validación de si hay o no Match, debe hacerse en el back, retornar el error 401!
     //? Igual leer bien la respuesta del apí con la data en el authservice
-    this.authService.loginUser(this.formulario.value)
+    this.authService.loginUser(this.formularioLogin.value)
       .subscribe((respuesta: any) => {
         //* Redirigimos si pasa bien todo
         //? Tener cuidado de como reaccione Python nada más
@@ -98,14 +98,14 @@ export class UserLoginComponent implements OnInit {
   }
 
   /* 
-  * Manejar errores de formulario en Angular
+  * Manejar errores de formularioLogin en Angular
    */
 
   public errorHandling = (control: string, error: string) => {
     return (
-      this.formulario.controls[control].hasError(error) &&
-      this.formulario.controls[control].invalid &&
-      (this.makeSubmit || this.formulario.controls[control].touched)
+      this.formularioLogin.controls[control].hasError(error) &&
+      this.formularioLogin.controls[control].invalid &&
+      (this.makeSubmit || this.formularioLogin.controls[control].touched)
     );
   };
 }
