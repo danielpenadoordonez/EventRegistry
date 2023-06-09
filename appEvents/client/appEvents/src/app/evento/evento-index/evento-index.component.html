@@ -1,42 +1,39 @@
 <div class="grid-container">
-    <h1 class="mat-h1">Eventos</h1>
-    <mat-grid-list [cols]="3" rowHeight="12em" gutterSize="10px" *ngIf="datos">
-      <mat-grid-tile *ngFor="let item of datos" >
-        <mat-card class="dashboard-card">
-          <mat-card-header>
-            <mat-card-title>
-              {{item.nombre }}
-             
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content class="dashboard-card-content">
-            <div> {{
-              item.precio | currency: "USD" 
-            }}</div>
-          </mat-card-content>
-          <mat-divider inset></mat-divider>
-          <mat-card-actions>
-            <button
-            mat-mini-fab color="accent"
+  <h1 class="mat-h1">Eventos</h1>
+  <mat-grid-list [cols]="3" rowHeight="12em" gutterSize="10px" *ngIf="datos">
+    <mat-grid-tile *ngFor="let evento of datos">
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            {{ evento.nombre <i class='bx bx-calendar-event bx-tada' ></i>}} 
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <div>{{ evento.descripcion}}</div>
+          <div></div>
+        </mat-card-content>
+        <mat-divider inset></mat-divider>
+        <mat-card-actions>
+          <button
+            mat-mini-fab
+            color="accent"
             matTooltip="Detalle del evento"
-            aria-label="Detalle Videjuego"
-            color="primary"
-            (click)="detalleEvento(item.id)"
+            aria-label="Detalle del evento"
+            (click)="detalleEvento(evento.event_id)"
           >
-          <mat-icon class="mat-18">info</mat-icon>
+            <mat-icon class="mat-18">info</mat-icon>
           </button>
           <button
-            mat-mini-fab color="accent"
-            matTooltip="Comprar"
-            aria-label="Comprar"
-            color="primary"
-            (click)="editarEvento(item.id)"
+            mat-mini-fab
+            matTooltip="Editar la información del evento"
+            aria-label="Editar la información del evento"
+            (click)="editarEvento(evento.event_id)"
           >
-          
-          <mat-icon class="mat-18">add_shopping_cart</mat-icon>
+            <mat-icon class="mat-18">border_color</mat-icon>
           </button>
-          </mat-card-actions>
-        </mat-card>
-      </mat-grid-tile>
-    </mat-grid-list>
+        </mat-card-actions>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <!-- ! ngIf="currentUser.perfil == 'Admnistrador'" -->
 </div>

@@ -1,1 +1,20 @@
-<p>evento-detail works!</p>
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+  <mat-icon class="close-icon" color="primary">close</mat-icon>
+</button>
+<div *ngIf="datos">
+  <h2 mat-dialog-title>{{ datos.nombre }}</h2>
+  <mat-dialog-content>
+    <p>{{ datos.descripcion }}</p>
+    <p>{{ datos.fecha | date : "dd/MM/yyyy" }}</p>
+    <p></p>
+    <h4>
+      {{ datos.estado == 1 ? 'Abierto <i class="bx bx-lock-open bx-tada"></i>' :
+      'Cerrado <i class="bx bxs-lock bx-tada"></i>' }}
+    </h4>
+    <ul *ngIf="datos.generos">
+      <li *ngFor="let item of datos.generos">{{ item.nombre }}</li>
+    </ul>
+  </mat-dialog-content>
+
+  <mat-dialog-actions> </mat-dialog-actions>
+</div>

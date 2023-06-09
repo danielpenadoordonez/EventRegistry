@@ -36,9 +36,11 @@ export class HeaderComponent implements OnInit {
       this.qtyItems=value;
     });
   }
+
   login(){
     this.router.navigate(['usuario/login']);
   }
+  
   logout() {
     this.authService.logout();
     this.router.navigate(['usuario/login']);
