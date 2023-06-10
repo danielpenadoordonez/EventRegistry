@@ -83,6 +83,7 @@ export class VideojuegoFormComponent implements OnInit{
   public errorHandling = (control: string, error: string) => {
     return this.videojuegoForm.controls[control].hasError(error);
   };
+
   //Crear Videojueogo
   crearVideojuego(): void {
     //Establecer submit verdadero
@@ -132,13 +133,16 @@ export class VideojuegoFormComponent implements OnInit{
       });
     });
   }
+  
   onReset() {
     this.submitted = false;
     this.videojuegoForm.reset();
   }
+
   onBack() {
     this.router.navigate(['/videojuego/all']);
   }
+
   ngOnDestroy() {
     this.destroy$.next(true);
     // Desinscribirse
