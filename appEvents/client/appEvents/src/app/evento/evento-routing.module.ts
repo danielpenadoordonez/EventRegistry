@@ -21,6 +21,10 @@ const routes: Routes = [
     */
   },
   {
+    path: 'evento/',
+    component: EventoIndexComponent
+  },
+  {
     path: 'evento/all',
     component: EventoAllComponent
   },

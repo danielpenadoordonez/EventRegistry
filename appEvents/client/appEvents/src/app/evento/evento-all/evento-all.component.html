@@ -1,7 +1,7 @@
 <mat-card class="full-width">
   <!-- * Título de la carta -->
   <mat-card-title>
-    Aplicaciones
+    Eventos
     <a
       mat-fab
       matTooltip="Crear Evento"
@@ -86,7 +86,7 @@
               mat-mini-fab
               matTooltip="Cerrar evento"
               aria-label="Cerrar evento"
-              (click)="editarPadron(row.event_id)"
+              (click)="confirmBoxCerrarEvento(row.event_id, row.nombre)"
               [disabled]="row.estado != 1"
               [title]="
                 row.estado == 1

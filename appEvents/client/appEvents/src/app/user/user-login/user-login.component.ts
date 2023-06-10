@@ -13,7 +13,7 @@ import { NotificacionService, TipoMessage } from 'src/app/share/notification.ser
 
 export class UserLoginComponent implements OnInit {
   hide = true; //* Para esconder la contraseña
-  formularioLogin : FormGroup; //* Formulario
+  formularioLogin: FormGroup; //* Formulario
   makeSubmit: boolean = false;
   infoUsuario: any;
   constructor(
@@ -43,7 +43,7 @@ export class UserLoginComponent implements OnInit {
     this.mensajes();
   }
 
-  mensajes() {
+  mensajes(): void {
     let register = false; //* Si se registra
     let auth = ''; //* El auth guard realiza esto
     //* Obtener parámetros de la URL
@@ -68,11 +68,11 @@ export class UserLoginComponent implements OnInit {
 
   }
 
-  onReset() {
+  onReset(): void {
     this.formularioLogin.reset();
   }
 
-  submitForm() {
+  submitForm(): void {
     this.makeSubmit = true;
 
     //* Validación
