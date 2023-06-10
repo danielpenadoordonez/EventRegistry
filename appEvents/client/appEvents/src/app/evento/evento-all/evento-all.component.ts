@@ -99,7 +99,7 @@ export class EventoAllComponent implements AfterViewInit {
   }
 
   //* Generar reporte del evento
-  generarReporte(id: any): void {
+  generarReporte(id: any) : void {
     this.router.navigate(['/evento/reportePDF/'], {
       queryParams: { id: id }
     });
