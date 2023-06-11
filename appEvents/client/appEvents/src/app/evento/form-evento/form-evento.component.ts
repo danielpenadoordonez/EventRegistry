@@ -5,6 +5,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { AuthenticationService } from 'src/app/share/authentication.service';
 import { GenericService } from 'src/app/share/generic.service';
 import { NotificacionService, TipoMessage } from 'src/app/share/notification.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-form-evento',
@@ -39,7 +40,7 @@ export class FormEventoComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
     private authService: AuthenticationService, private gService: GenericService,
-    private router: Router, private activeRouter: ActivatedRoute, private notificacion: NotificacionService
+    private router: Router, private activeRouter: ActivatedRoute, private notificacion: NotificacionService,
   ) {
     this.loadDates();
     this.formularioReactive();
@@ -53,7 +54,7 @@ export class FormEventoComponent implements OnInit {
         this.isCreate = false; //* Es update
         this.titleForm = "Actualizar Evento"; //* Cambiamos el título
         //* Obtener el evento y actualizar del API
-        this.gService.get('get-event', this.idEvent).pipe(takeUntil(this.destroy$))
+        this.gService.get('get-event', `event_id=${this.idEvent}`).pipe(takeUntil(this.destroy$))
           .subscribe((data: any) => {
             //* Cargamos la data
             this.eventInfo = data;
@@ -131,6 +132,15 @@ export class FormEventoComponent implements OnInit {
       return;
     }
 
+    if (this.srcFileResult === undefined) {
+      this.notificacion.mensaje(
+        'Evento - Padrón',
+        'Por favor, suba el padrón de registro',
+        TipoMessage.warning
+      );
+      return;
+    }
+
     //* Establecer el submit verdadero
     this.submitted = true;
 
@@ -146,6 +156,7 @@ export class FormEventoComponent implements OnInit {
       .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
         //* Obtener respuesta
         this.respEvento = data;
+        this.uploadExcelFile(); //? Importantísimo
         this.router.navigate(['/evento/all'],
           {
             queryParams: {
@@ -189,40 +200,71 @@ export class FormEventoComponent implements OnInit {
       });
   }
 
-  //* Manejo del padrón en formato Excel
-  onFileSelected() {
-    const inputNode: any = document.querySelector('#file');
+  //* Método para leer el documento de Excel en Angular CLI
+  //* Ya que Angular Material NO acepta input file
+  onFileChange(event: any): void {
+    //* Leemos el archivo mediante el event y queryselector
+    const target: DataTransfer = <DataTransfer>(event.target);
+    const inputNode: any = event.target as HTMLInputElement;
+    const file = inputNode.files[0];
 
-    if (typeof (FileReader) !== 'undefined') {
-      const reader = new FileReader();
-
-      reader.onload = (e: any) => {
-        this.srcFileResult = e.target.result;
-      };
-
-      reader.readAsArrayBuffer(inputNode.files[0]);
+    //* Validaciones necesarias
+    if (target.files.length !== 1) {
+      this.notificacion.mensaje(
+        'Evento - Padrón',
+        'No se pueden ingresar más de 1 archivo',
+        TipoMessage.error
+      );
+      this.srcFileResult = undefined;
+      return;
     }
-  }
 
-  /* 
-  function readFileAndSend() {
-  const fileInput = document.getElementById('myFileInput');
-  const file = fileInput.files[0];
+    if (typeof (FileReader) === 'undefined' || !file) {
+      this.notificacion.mensaje(
+        'Evento - Padrón',
+        'Por favor, ingrese un documento válido',
+        TipoMessage.error
+      );
+      this.srcFileResult = undefined;
+      return;
+    }
 
-  if (file) {
-    const reader = new FileReader();
+    //* Notificaciones
+    if (this.srcFileResult !== 'undefined') {
+      this.notificacion.mensaje(
+        'Evento - Padrón',
+        'Se ha actualizado el padrón',
+        TipoMessage.info
+      );
+    }
 
-    reader.onload = function(event) {
-      const contents = event.target.result;
-      sendFileContents(contents);
+    const reader: FileReader = new FileReader();
+    reader.readAsBinaryString(target.files[0]);
+    reader.onload = (e: any) => {
+      //* Creamos el libro de trabajo
+      const binarystr: string = e.target.result;
+      const wb: XLSX.WorkBook = XLSX.read(binarystr, { type: 'binary' });
+
+      //* Seleccionamos la primera hoja
+      const wsname: string = wb.SheetNames[0];
+      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+
+      //* Salvamos la data en la variable
+      this.srcFileResult = XLSX.utils.sheet_to_json(ws);
+      console.log(this.srcFileResult);
     };
-
-    reader.readAsText(file);
   }
-}
-  */
+
+  //* Subir el padrón, es necesario usar un timeout para que no cree conflicto con las llaves
+  //? Recuerde hacer skip a los repetidos
+  uploadExcelFile(): void {
+   //* Enviar en un API POST
+
+   //! Esto y el HTML
+  }
 
   //* Manejo de errores
+  //* Público puesto que se usa en todo lado
   public errorHandling = (control: string, error: string) => {
     return this.eventoForm.controls[control].hasError(error);
   };

@@ -4,8 +4,11 @@
 
 export const environment = {
   production: false,
-  apiURL: 'http://localhost:3000/'
+  apiURL: 'http://127.0.0.1:8080/'
 };
+
+//* Python (FLASK): http://127.0.0.1:8080
+//* Prisma: http://localhost:3000/
 
 /*
  * For easier debugging in development mode, you can import the following file

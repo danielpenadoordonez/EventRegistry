@@ -1,3 +1,0 @@
-pyodbc
-flask
-flask_cors

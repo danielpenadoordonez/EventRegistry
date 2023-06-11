@@ -8,8 +8,9 @@
     <p>{{ datos.fecha | date : "dd/MM/yyyy" }}</p>
     <p></p>
     <h4>
-      {{ datos.estado == 1 ? 'Abierto <i class="bx bx-lock-open bx-tada"></i>' :
-      'Cerrado <i class="bx bxs-lock bx-tada"></i>' }}
+      {{ datos.abierto ? "Abierto" : "Cerrado" }}
+      <i *ngIf="datos.abierto" class="bx bx-lock-open bx-tada"></i>
+      <i *ngIf="!datos.abierto" class="bx bxs-lock bx-tada"></i>
     </h4>
   </mat-dialog-content>
 
