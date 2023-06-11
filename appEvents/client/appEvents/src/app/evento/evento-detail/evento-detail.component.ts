@@ -29,7 +29,7 @@ export class EventoDetailComponent implements OnInit {
 
   obtenerEvento(id: any){
     this.gService
-    .get('get-event',id)
+    .get('get-event', `event_id=${id}`)
     .pipe(takeUntil(this.destroy$))
     .subscribe((data:any)=>{
         this.datos=data; 

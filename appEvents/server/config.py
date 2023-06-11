@@ -1,1 +1,0 @@
-#Para Daniel, usar el lado de la bd
