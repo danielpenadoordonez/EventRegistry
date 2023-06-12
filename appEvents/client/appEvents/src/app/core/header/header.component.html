@@ -14,13 +14,13 @@
           Inicio
         </button>
         <button
-        mat-menu-item
-        [routerLink]="'/evento'"
-        [routerLinkActive]="'mat-raised-button'"
-        title="Página home"
-      >
-        Eventos
-      </button>
+          mat-menu-item
+          [routerLink]="'/evento'"
+          [routerLinkActive]="'mat-raised-button'"
+          title="Página home"
+        >
+          Eventos
+        </button>
         <button
           mat-menu-item
           [routerLink]="'/acerca-de'"
@@ -55,7 +55,6 @@
     </div>
     <div class="example-spacer"></div>
     <div class="example-spacer">
-      
       <!-- * Enlaces de la aplicación -->
       <!-- * https://fonts.google.com/icons -->
       <!--* https://material.angular.io/guide/typography-->
@@ -64,17 +63,34 @@
         {{ currentUser.user.username }}</span
       >
       <button mat-icon-button [matMenuTriggerFor]="menu3" title="Sesión">
-        <mat-icon [ngStyle]="{ color: isAutenticated ? ' white' : '#9E9E9E' }"
+        <mat-icon
+          [ngStyle]="{
+            color: isAutenticated
+              ? currentUser.user.id_profile == 1
+                ? '#E76C6C'
+                : 'white'
+              : '#9E9E9E'
+          }"
           >person</mat-icon
         >
       </button>
 
       <mat-menu #menu3="matMenu">
-        <a mat-menu-item *ngIf="!isAutenticated" (click)="login()" title="Iniciar sesión">
+        <a
+          mat-menu-item
+          *ngIf="!isAutenticated"
+          (click)="login()"
+          title="Iniciar sesión"
+        >
           <mat-icon>person_add</mat-icon>
           <span> Iniciar sesión </span>
         </a>
-        <a mat-menu-item *ngIf="isAutenticated" (click)="logout()" title="Cerrar sesión">
+        <a
+          mat-menu-item
+          *ngIf="isAutenticated"
+          (click)="logout()"
+          title="Cerrar sesión"
+        >
           <mat-icon>person_remove</mat-icon>
           <span> Cerrar sesión </span>
         </a>

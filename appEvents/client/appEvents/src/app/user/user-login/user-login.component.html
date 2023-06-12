@@ -8,7 +8,7 @@
         <div class="col">
           <mat-form-field class="full-width">
             <mat-label title="Nombre de usuario">Username</mat-label>
-            <input matInput #username="" type="text" placeholder="Nombre de usuario" formControlName="username" pattern="^[a-zA-Z0-9_.-]*$" minlength="5" maxlength="16" required="true" />
+            <input matInput #username="" type="text" placeholder="Nombre de usuario" autocomplete="true" formControlName="username" pattern="^[a-zA-Z0-9_.-]*$" minlength="5" maxlength="16" required="true" />
             <!-- ! Sirve para controlar los lenght -->
             <mat-hint>{{ username.value.length }} / 16</mat-hint>
             <!-- ? Validaciones en el HTML pá -->
@@ -31,7 +31,7 @@
         <div class="col">
           <mat-form-field class="full-width">
           <mat-label>Password</mat-label>
-          <input matInput #password="" [type]="hide ? 'password' : 'text'" placeholder="Digite su contraseña" formControlName="password" minlength="8" maxlength="32" required="true" />
+          <input matInput #password="" [type]="hide ? 'password' : 'text'" placeholder="Digite su contraseña" autocomplete="true" formControlName="password" minlength="8" maxlength="32" required="true" />
           <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide" [title]="hide ? 'Mostrar Contraseña' : 'Ocultar Contraseña'">
             <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
           </button>

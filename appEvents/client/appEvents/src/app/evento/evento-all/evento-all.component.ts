@@ -6,7 +6,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { GenericService } from 'src/app/share/generic.service';
 import { NotificacionService, TipoMessage } from 'src/app/share/notification.service';
-import { AppearanceAnimation, ConfirmBoxEvokeService, ConfirmBoxInitializer, DialogLayoutDisplay, DisappearanceAnimation } from '@costlydeveloper/ngx-awesome-popup';
+import { AppearanceAnimation, ConfirmBoxInitializer, DialogLayoutDisplay, DisappearanceAnimation } from '@costlydeveloper/ngx-awesome-popup';
 
 @Component({
   selector: 'app-evento-all',
@@ -24,11 +24,11 @@ export class EventoAllComponent implements AfterViewInit {
   dataSource = new MatTableDataSource<any>();
 
   //* Columnas para la tabla
-  displayedColumns = ['nombre', "fecha", "estado", "acciones"];
+  displayedColumns = ['nombre', "fecha", "estado", "padron", "reporte","cierre"];
 
   constructor(private router: Router,
     private route: ActivatedRoute, private gService: GenericService,
-    private notificacion: NotificacionService, private confirmBoxEvokeService: ConfirmBoxEvokeService) {
+    private notificacion: NotificacionService) {
   }
 
   ngOnInit(): void {
@@ -54,12 +54,14 @@ export class EventoAllComponent implements AfterViewInit {
   //* Carga la lista de eventos desde el API e inicializa los data source
   listaEventos(): void {
     this.gService
-      .list('get-eventos/')
+      .list('get-events')
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
-        console.log(data);
+        console.log(data.events);
         //* Ordenamos por fecha
-        this.datos = data.sort((a, b) => a.date.getTime() - b.date.getTime());
+        this.datos = data.events.sort((a : any, b : any) => a.fecha.getTime - b.fecha.getTime);
+        console.log('Sort data:');
+        console.log(this.datos);
         this.dataSource = new MatTableDataSource(this.datos);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
@@ -76,7 +78,7 @@ export class EventoAllComponent implements AfterViewInit {
   crearEvento(): void {
     this.router.navigate(['/evento/create'], {
       relativeTo: this.route,
-    }); 
+    });
   }
 
   //! RECUERDE LAS CONDICIONES PARA PDOER USAR ESTOS BOTONES
@@ -99,7 +101,7 @@ export class EventoAllComponent implements AfterViewInit {
   }
 
   //* Generar reporte del evento
-  generarReporte(id: any) : void {
+  generarReporte(id: any): void {
     this.router.navigate(['/evento/reportePDF/'], {
       queryParams: { id: id }
     });
@@ -107,7 +109,7 @@ export class EventoAllComponent implements AfterViewInit {
 
   //* Desplegar el confirmbox para saber si quiere o no cerrar el evento
   //! No tiene diseño aún, ocupa bootstrap, pero no tengo tiempo
-  confirmBoxCerrarEvento(id: any, nombre : string): void {
+  confirmBoxCerrarEvento(id: any, nombre: string): void {
     if (!this.isConfirmBoxActive) {
       this.isConfirmBoxActive = !this.isConfirmBoxActive; //* Cambiamos el estado
 

@@ -23,8 +23,8 @@ export class AuthenticationService {
   private authenticated = new BehaviorSubject<boolean>(false);
   //* Inyectar cliente HTTP para las solicitudes al API
 
-
-  constructor(private http: HttpClient, private cartService:CartService) {
+//* private cartService:CartService
+  constructor(private http: HttpClient) {
     //* Obtener los datos del usuario en localStorage, si existe
     this.currentUserSubject = new BehaviorSubject<any>(
       JSON.parse(localStorage.getItem('currentUser'))
@@ -59,16 +59,25 @@ export class AuthenticationService {
   //* Login
   loginUser(user: any): Observable<any> {
     return this.http
-    //! OJO A LA RUTA API Y ENVIROMENT
-      .post<any>(this.ServerUrl + 'user/login', user)
+    //! OJO A LA RUTA API Y ENVIROMENT 
+      .get<any>(this.ServerUrl + `login?username=${user.username}&password=${user.password}`)
       .pipe(
         map((user) => {
           //* almacene los detalles del usuario y el token jwt
           //* en el almacenamiento local para mantener al usuario conectado entre las actualizaciones de la página
-          //! OJO A COMO LEE LA DATA
-          localStorage.setItem('currentUser', JSON.stringify(user.data));
+          //! Formato para el local storage
+          const profiles = ['Administrador', 'Moderador', 'Miembro'];
+          const userData = {
+            "user":{
+              "id": user.id,
+              "username": user.username,
+              "profile": profiles[user.id_perfil - 1],
+              "id_profile": user.id_perfil
+            }
+          }
+          localStorage.setItem('currentUser', JSON.stringify(userData));
           this.authenticated.next(true);
-          this.currentUserSubject.next(user.data);
+          this.currentUserSubject.next(userData);
           return user;
         })
       );
@@ -84,8 +93,8 @@ export class AuthenticationService {
       this.currentUserSubject.next(null);
       //* Eliminarlo del observable del boleano si esta autenticado
       this.authenticated.next(false);
-      //* Eliminar carrito
-      this.cartService.deleteCart();
+      //* Eliminar carrito [Sin uso]
+      //* this.cartService.deleteCart();
       return true;
     }
     return false;

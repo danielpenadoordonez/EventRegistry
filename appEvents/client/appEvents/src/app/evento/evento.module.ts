@@ -20,12 +20,15 @@ import { EventoIndexComponent } from './evento-index/evento-index.component';
 import { EventoDetailComponent } from './evento-detail/evento-detail.component';
 import { ReportePdfComponent } from './reporte-pdf/reporte-pdf.component';
 import { FormPadronComponent } from './form-padron/form-padron.component';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import {
   ConfirmBoxConfigModule,
   DialogConfigModule,
   NgxAwesomePopupModule,
   ToastNotificationConfigModule,
 } from '@costlydeveloper/ngx-awesome-popup';
+
 
 @NgModule({
   declarations: [
@@ -52,31 +55,34 @@ import {
     MatSortModule,
     MatDividerModule,
     MatDialogModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     NgxAwesomePopupModule.forRoot({
       colorList: {
-        success: '#3caea3', 
-        info: '#2f8ee5', 
-        warning: '#ffc107', 
-        danger: '#e46464', 
-        customOne: '#3ebb1a', 
-        customTwo: '#bd47fa', 
+        success: '#3caea3',
+        info: '#2f8ee5',
+        warning: '#ffc107',
+        danger: '#e46464',
+        customOne: '#3ebb1a',
+        customTwo: '#bd47fa',
       },
     }),
     DialogConfigModule.forRoot(),
     ConfirmBoxConfigModule.forRoot({
       confirmBoxCoreConfig: {
-         width: '50%', 
-         height: '50%', 
-         buttonPosition: 'right', 
-         dispatch: { 
-            title: 'Default title',
-            message: 'Default message'
-         },
-         confirmLabel: 'Confirm',
-         declineLabel: 'Decline', 
-         disableIcon: true, 
-         allowHtmlMessage: true, 
-      }}),
+        width: '50%',
+        height: '50%',
+        buttonPosition: 'right',
+        dispatch: {
+          title: 'Default title',
+          message: 'Default message'
+        },
+        confirmLabel: 'Confirm',
+        declineLabel: 'Decline',
+        disableIcon: true,
+        allowHtmlMessage: true,
+      }
+    }),
     ToastNotificationConfigModule.forRoot()
   ]
 })
