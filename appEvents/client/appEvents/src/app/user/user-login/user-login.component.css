@@ -58,6 +58,10 @@ mat-card-actions button {
   background-color: red;
 }
 
+.mat-raised-button{
+  opacity: 0.6;
+}
+
 .mat-raised-button:hover {
   text-decoration: underline;
   cursor: pointer;

@@ -1,3 +1,11 @@
+/*  ? Imports */
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Roboto:ital,wght@1,300&display=swap");
+
+
+:root{
+  --font-family: "Roboto", sans-serif;
+}
+
 .full-width {
   width: 100%;
 }
@@ -5,6 +13,12 @@
 .shipping-card {
   min-width: 120px;
   margin: 20px auto;
+  max-width: 60%;
+  justify-content: center;
+  align-items: center;
+  background-color: #2a3b49;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+  border: 2px ridge #45647e;
 }
 
 .mat-radio-button {
@@ -34,6 +48,73 @@
   margin-right: 12px;
 }
 
-mat-form-field {
-  margin-right: 12px;
+.matInput {
+  font-family: Graphie, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+}
+
+mat-label {
+  font-size: large;
+}
+
+mat-card-content div {
+  padding-top: 5px;
+  padding-bottom: 2px;
+}
+
+div a {
+  color: aliceblue;
+  opacity: 0.5;
+  text-decoration: none;
+}
+
+div a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.mat-card-header {
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+}
+
+.mat-card {
+  background-color: #377aaa;
+  border: 2px solid;
+  border-radius: 15px;
+}
+
+
+.mat-card-header .mat-card-title {
+  color: aliceblue;
+  font-family: var(--font-family);
+  font-weight: bold;
+  text-decoration: none;
+  font-size: large;
+}
+
+#btnBack{
+  color: aliceblue;
+  background-color: red;
+}
+
+#btnSave{
+  color: aliceblue;
+  background-color: #0094fd;
+}
+
+#btnFile{
+  color: aliceblue;
+  background-color: #0094fd;
+}
+
+.mat-raised-button{
+  opacity: 0.6;
+}
+
+.mat-raised-button:hover {
+  text-decoration: underline;
+  cursor: pointer;
+  opacity: 1;
 }
