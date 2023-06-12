@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { Component, OnInit, NgZone, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { AuthenticationService } from 'src/app/share/authentication.service';
 import { GenericService } from 'src/app/share/generic.service';
 import { NotificacionService, TipoMessage } from 'src/app/share/notification.service';
@@ -27,9 +28,10 @@ export class FormEventoComponent implements OnInit {
   currentUser: any; //* Usuario actual
   isAutenticated: boolean; //* Está o no autenticado, debería checar que esté autentificado
   titleForm: string = 'Crear Evento';
-  destroy$: Subject<boolean> = new Subject<boolean>();
+  destroy$: Subject<boolean> = new Subject<boolean>(); //* Observable encargado de destruir las suscripciones
   eventInfo: any; //* Información del evento [UPDATE]
   respEvento: any; //* Respuesta del API GET/POST
+  respExcel: any; //* Respuesta del API POST de Excel upload
   submitted = false; //* Subido o no
   eventoForm: FormGroup; //* Formulario
   idEvent: number = 0; //* Respuesta del query params en caso de ser update
@@ -38,11 +40,14 @@ export class FormEventoComponent implements OnInit {
   minDate: Date; //* Fecha mínima
   maxDate: Date; //* Fecha máxima
 
+  //? Encargado de controlar el text area
+  @ViewChild('autosize') autosize: CdkTextareaAutosize;
+
   constructor(private fb: FormBuilder,
     private authService: AuthenticationService, private gService: GenericService,
-    private router: Router, private activeRouter: ActivatedRoute, private notificacion: NotificacionService,
+    private router: Router, private activeRouter: ActivatedRoute,
+    private notificacion: NotificacionService, private _ngZone: NgZone
   ) {
-    this.loadDates();
     this.formularioReactive();
   }
 
@@ -60,16 +65,18 @@ export class FormEventoComponent implements OnInit {
             this.eventInfo = data;
             //* Asigmanos las data
             this.eventoForm.setValue({
-              id_usuario: this.eventInfo.id_usuario,
+              id: this.eventInfo.id,
+              id_usuario: this.eventInfo.id_Usuario,
               nombre: this.eventInfo.nombre,
               descripcion: this.eventInfo.descripcion,
               fecha: this.eventInfo.fecha,
-              estado: this.eventInfo.estado
+              abierto: this.eventInfo.abierto
             })
           });
       }
     });
     this.cargarUsuario();
+    this.loadDates();
   }
 
 
@@ -88,6 +95,7 @@ export class FormEventoComponent implements OnInit {
   //* Declaración y orden del grupo de componentes del formulario con sus correspondientes validación según sea necesario
   formularioReactive(): void {
     this.eventoForm = this.fb.group({
+      id: null, //* Id del evento
       id_usuario: null, //* Se obtiene del servicio
       nombre: [null, Validators.compose([
         Validators.required, Validators.minLength(5), Validators.maxLength(100), Validators.pattern(/[\w\[\]`ñáéíóúäëïöü!@#$%\^&*()={}:;<>+'-/\s/]*/)])
@@ -96,9 +104,9 @@ export class FormEventoComponent implements OnInit {
         Validators.required, Validators.minLength(20), Validators.maxLength(500), Validators.pattern(/[\w\[\]`ñáéíóúäëïöü!@#$%\^&*()={}:;<>+'-/\s/]*/)])
       ], //* Descripción del evento
       fecha: [null, Validators.compose([
-        Validators.required, Validators.minLength(6), Validators.maxLength(10), Validators.pattern(/^\d{4}-\d{2}-\d{2}$/)])
+        Validators.required, Validators.minLength(6), Validators.maxLength(10)])
       ], //* Fecha del evento, viene del date picker
-      estado: null //* Por defecto es 1
+      abierto: null //* Por defecto es 1 (abierto)
     });
   }
 
@@ -110,15 +118,8 @@ export class FormEventoComponent implements OnInit {
     this.minDate = new Date();
     this.minDate.setDate(currentTime.getDate() + 1);
     this.maxDate = new Date();
-    this.maxDate.setDate(currentTime.getTime() + 90);
+    this.maxDate.setDate(currentTime.getDate() + 90);
   }
-
-  //* Filtro para datepicker
-  myFilter = (d: Date | null): boolean => {
-    const currentDate = new Date();
-    //* Avoid the user to select the same or previous day
-    return currentDate.getTime() >= d.getTime();
-  };
 
   //* En caso de crear evento
   crearEvento(): void {
@@ -148,8 +149,8 @@ export class FormEventoComponent implements OnInit {
     //? Recuerde que el id es de tipo identity, por lo que no es necesario
     //? El estado se usa default.
 
-    this.eventoForm.get('id_usuario').setValue(this.currentUser.id);
-    this.eventoForm.get('estado').setValue(1);
+    this.eventoForm.get('id_usuario').setValue(this.currentUser.user.id);
+    this.eventoForm.get('abierto').setValue(1);
 
     //* Acción del API create enviando toda la informacion del formulario
     this.gService.create('save-event', this.eventoForm.value)
@@ -258,9 +259,18 @@ export class FormEventoComponent implements OnInit {
   //* Subir el padrón, es necesario usar un timeout para que no cree conflicto con las llaves
   //? Recuerde hacer skip a los repetidos
   uploadExcelFile(): void {
-   //* Enviar en un API POST
-
-   //! Esto y el HTML
+    //* Enviar en un API POST
+    //! Revisar esa URL
+    //TODO puede ser que necesite ser serializa o con formato especial
+    const rspdata = { //* Enviar data
+      data: [this.respEvento]
+    };
+    this.gService.create('upload-padron', rspdata)
+      .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
+        //* Obtener respuesta
+        this.respExcel = data;
+        console.log(`Respuesta API EXCEL: \n ${this.respExcel}`)
+      });
   }
 
   //* Manejo de errores
@@ -268,6 +278,21 @@ export class FormEventoComponent implements OnInit {
   public errorHandling = (control: string, error: string) => {
     return this.eventoForm.controls[control].hasError(error);
   };
+
+  //* Encargado de manejar las dimensiones del text area
+  triggerResize() {
+    //* Espera a cambios de forma responsiva
+    this._ngZone.onStable.pipe(take(1)).subscribe(() => this.autosize.resizeToFitContent(true));
+  }
+
+  //* Filtro para datepicker
+  dateFilter = (d: Date | null): boolean => {
+    const currentDate = new Date();
+    const enterDate = (d || new Date());
+    //* Avoid the user to select the same or previous day
+    return !(currentDate.getTime() >= enterDate.getTime());
+  };
+
 
   //* Reiniciar
   onReset(): void {
@@ -277,7 +302,13 @@ export class FormEventoComponent implements OnInit {
 
   //* Volver
   onBack(): void {
-    this.router.navigate(['/evento/all']);
+    if(this.isCreate){
+      this.router.navigate(['/evento/all']);
+      return; //? Puede ser redundante
+    } else{
+      this.router.navigate(['/evento/']);
+      return;
+    }
   }
 
   //* Para destruir y desinscribirse

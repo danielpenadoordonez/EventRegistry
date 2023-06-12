@@ -1,13 +1,184 @@
-<form [formGroup]="eventoForm" novalidate (ngSubmit)="isCreate ? crearEvento(): actualizarEvento()">
-  <mat-label>Seleccione el archivo .xlsx</mat-label>
-  <div></div>
-  <button mat-raised-button type="button" title="Subir archivo XLSX" (click)="fileInput.click()" color="accent">Seleccione el archivo</button>
-  <input
-    hidden
-    (change)="onFileChange($event)"
-    #fileInput
-    accept=".xlsx"
-    type="file"
-  />
-  <mat-label *ngIf="srcFileResult">¡Padrón cargado éxitosamente!<i class='bx bxs-cloud-upload bx-tada' style='color:#000000' ></i></mat-label>
+<form
+  [formGroup]="eventoForm"
+  novalidate
+  (ngSubmit)="isCreate ? crearEvento() : actualizarEvento()"
+>
+  <!-- ! Este es el id, pero como no sirve para nada aquí, se oculta -->
+  <input type="hidden" formControlName="id" />
+  <!-- ! Igualmente con el id de usuario y el estado -->
+  <input type="hidden" formControlName="id_usuario" />
+  <input type="hidden" formControlName="abierto" />
+  <mat-card class="shipping-card">
+    <mat-card-header>
+      <mat-card-title>{{ titleForm }} Evento</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input
+              matInput
+              #nombreEvento
+              minlength="5"
+              maxlength="100"
+              pattern="[\w\[\]`ñáéíóúäëïöü!@#$%\^&*()={}:;<>+'-/\s/]*"
+              placeholder="Nombre"
+              title="Ingrese el nombre"
+              formControlName="nombre"
+              autocomplete="false"
+            />
+            <mat-hint align="end"
+              >{{ nombreEvento.value.length }} / 100</mat-hint
+            >
+            <mat-error
+              *ngIf="eventoForm.controls['nombre'].hasError('required')"
+            >
+              El Nombre del evento es <strong>requerido</strong>
+            </mat-error>
+            <mat-error
+              *ngIf="eventoForm.controls['nombre'].hasError('pattern')"
+            >
+              El Nombre del evento es
+              <strong>debe seguir el formato adecuado</strong>
+            </mat-error>
+            <mat-error
+              *ngIf="eventoForm.controls['nombre'].hasError('minlength')"
+            >
+              El Nombre del evento es <strong>demasiado corto</strong>
+            </mat-error>
+            <mat-error
+              *ngIf="eventoForm.controls['nombre'].hasError('maxlenght')"
+            >
+              El Nombre del evento es <strong>demasiado largo</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <mat-label>Descripción</mat-label>
+            <textarea
+              matInput
+              cdkTextareaAutosize
+              #autosize="cdkTextareaAutosize"
+              #textDescription
+              cdkAutosizeMinRows="1"
+              cdkAutosizeMaxRows="5"
+              minlength="20"
+              maxlength="500"
+              pattern="[\w\[\]`ñáéíóúäëïöü!@#$%\^&*()={}:;<>+'-/\s/]*"
+              formControlName="descripcion"
+              autocomplete="false"
+            ></textarea>
+            <mat-hint align="end"
+              >{{ textDescription.value.length }} / 500</mat-hint
+            >
+            <mat-error
+              *ngIf="eventoForm.controls['descripcion'].hasError('required')"
+            >
+              La descripción es <strong>requerida</strong>
+            </mat-error>
+            <mat-error
+              *ngIf="eventoForm.controls['descripcion'].hasError('pattern')"
+            >
+              La descripción debe seguir el <strong>formato requerido</strong>
+            </mat-error>
+            <mat-error
+              *ngIf="eventoForm.controls['descripcion'].hasError('minlength')"
+            >
+              La descripción es demasiado <strong>corta</strong>
+            </mat-error>
+            <mat-error
+              *ngIf="eventoForm.controls['descripcion'].hasError('maxlength')"
+            >
+              La descripción es demasiado<strong>larga</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="example-full-width" color="accent">
+            <mat-label>Seleccione la fecha</mat-label>
+            <input
+              matInput
+              [min]="minDate"
+              [max]="maxDate"
+              [matDatepicker]="picker"
+              formControlName="fecha"
+              minlength="6"
+              maxlength="10"
+              [matDatepickerFilter]="dateFilter"
+              title="Fecha del evento"
+            />
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker color="accent"></mat-datepicker>
+          </mat-form-field>
+          <mat-error *ngIf="eventoForm.controls['fecha'].hasError('required')">
+            La fecha del evento es<strong>requerida</strong>
+          </mat-error>
+          <mat-error *ngIf="eventoForm.controls['fecha'].hasError('minlength')">
+            La fecha del evento es<strong>inválida</strong>
+          </mat-error>
+          <mat-error *ngIf="eventoForm.controls['fecha'].hasError('maxlength')">
+            La fecha del evento es<strong>inválida</strong>
+          </mat-error>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <mat-label>Seleccione el archivo .xlsx</mat-label>
+          <button
+            mat-raised-button
+            type="button"
+            title="Subir archivo XLSX"
+            (click)="fileInput.click()"
+            color="accent"
+          >
+            Seleccione el archivo
+          </button>
+          <input
+            hidden
+            (change)="onFileChange($event)"
+            #fileInput
+            accept=".xlsx"
+            type="file"
+          />
+          <mat-label *ngIf="srcFileResult"
+            >¡Padrón cargado éxitosamente! <i
+              class="bx bxs-cloud-upload bx-tada"
+              style="color: #000000"
+            ></i
+          ></mat-label>
+          <mat-error *ngIf="!srcFileResult">
+            El padrón de evento es <strong>requerido</strong>
+          </mat-error>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        (click)="onBack()"
+        title="Regresar a la página anterior"
+      >
+        Regresar
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [title]="isCreate ? 'Guardar evento' : 'Actualizar evento'"
+      >
+        {{ isCreate ? "Guardar" : "Actualizar" }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
 </form>

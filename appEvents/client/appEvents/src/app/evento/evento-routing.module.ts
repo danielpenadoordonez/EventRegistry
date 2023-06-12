@@ -6,19 +6,17 @@ import { EventoIndexComponent } from './evento-index/evento-index.component';
 import { EventoDetailComponent } from './evento-detail/evento-detail.component';
 import { ReportePdfComponent } from './reporte-pdf/reporte-pdf.component';
 import { FormPadronComponent } from './form-padron/form-padron.component';
+import { AuthGuard } from '../share/guards/auth.guard';
 
 const routes: Routes = [
   //! Respetar orden de las rutas - WARNING
   {
     path: 'evento',
-    component: EventoIndexComponent
-    /* 
-     ? Seguridad próximamente
-    * canActivate: [AuthGuard],
-     * data: {
-     *   roles: ['ADMIN'],
-     * },
-    */
+    component: EventoIndexComponent, 
+    canActivate: [AuthGuard],
+    data: {
+      roles: ['Administrador', 'Moderador', 'Miembro'],
+    },
   },
   {
     path: 'evento/',

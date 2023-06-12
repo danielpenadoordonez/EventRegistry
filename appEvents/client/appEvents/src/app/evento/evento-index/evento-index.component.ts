@@ -35,9 +35,8 @@ export class EventoIndexComponent implements OnInit {
     this.loadUser();
 
     //* Encargado de notificar un update
-    console.log('Sí funciona el on init');
     this.route.params.subscribe((params: Params) => {
-      const isUpdate = params['update']; 
+      const isUpdate = params['update'];
       if (isUpdate != undefined && isUpdate != null) {
         const nombreEvento = params['nombre'];
         this.notificacion.mensaje(
@@ -53,8 +52,8 @@ export class EventoIndexComponent implements OnInit {
   listaEventos(): void {
     this.gSevice.list('get-events').pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
-        console.log(data.events);
-        this.datos = data.events;
+        //* Ordenamos la data
+        this.datos = data.events.sort((a: any, b: any) => a.fecha.getTime - b.fecha.getTime);
       });
   }
 

@@ -13,8 +13,8 @@
   top: auto;
   left: 15px;
   right: 15px;
-  bottom: auto;
-  padding-top: 5px;
+  bottom: 15px;
+  padding-top: 3px;
 }
 
 .dashboard-card-content {

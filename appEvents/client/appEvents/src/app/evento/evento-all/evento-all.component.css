@@ -47,4 +47,11 @@
   opacity: 1;
 }
 
+.mat-mini-fab:disabled{
+  opacity: 0.5;
+}
+
+.mat-mini-fab:disabled .mat-icon{
+  opacity: 0.5;
+}
 

@@ -29,14 +29,13 @@ export class AuthGuard implements CanActivate {
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     let url: string = state.url;
     return this.checkUserLogin(route, url);
-
   }
 
   //* Verificar que el rol del usuario coincida
   //* con alguno de los indicados
   checkUserLogin(route: ActivatedRouteSnapshot, url: any): boolean {
     if (this.isAuthenticated) {
-      const userRole = this.currentUser.user.perfil; //! Cambiar aqui
+      const userRole = this.currentUser.user.profile; 
       //roles.length && roles.indexOf(verify.role)===-1
       if (route.data['roles'].length && !route.data['roles'].includes(userRole)) {
         this.router.navigate(['/usuario/login'], {

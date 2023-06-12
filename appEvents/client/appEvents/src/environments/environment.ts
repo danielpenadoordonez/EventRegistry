@@ -7,7 +7,7 @@ export const environment = {
   apiURL: 'http://127.0.0.1:8080/'
 };
 
-//* Python (FLASK): http://127.0.0.1:8080
+//* Python (FLASK): http://127.0.0.1:8080/
 //* Prisma: http://localhost:3000/
 
 /*
