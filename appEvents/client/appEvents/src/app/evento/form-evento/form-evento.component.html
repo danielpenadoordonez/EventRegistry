@@ -10,18 +10,31 @@
   <input type="hidden" formControlName="abierto" />
   <mat-card class="shipping-card">
     <mat-card-header>
-      <mat-card-title>{{ titleForm }} Evento</mat-card-title>
+      <mat-card-title
+        >{{ titleForm }}
+        <i
+          class="bx bxs-cloud-upload bx-tada"
+          style="color: #ffffff"
+          *ngIf="!isCreate"
+        ></i>
+        <i
+          class="bx bxs-cloud-download bx-tada"
+          style="color: #ffffff"
+          *ngIf="isCreate"
+        ></i>
+      </mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <div class="row">
         <div class="col">
-          <mat-form-field class="full-width">
+          <mat-form-field class="full-width" color="accent">
+            <mat-label>Nombre</mat-label>
             <input
               matInput
               #nombreEvento
               minlength="5"
               maxlength="100"
-              pattern="[\w\[\]`ñáéíóúäëïöü!@#$%\^&*()={}:;<>+'-/\s/]*"
+              pattern="[\w\[\]`ÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ!@#$%\^&*()={}:;<>+'-/\s/]*"
               placeholder="Nombre"
               title="Ingrese el nombre"
               formControlName="nombre"
@@ -56,7 +69,7 @@
       </div>
       <div class="row">
         <div class="col">
-          <mat-form-field class="full-width">
+          <mat-form-field class="full-width" color="accent">
             <mat-label>Descripción</mat-label>
             <textarea
               matInput
@@ -67,7 +80,7 @@
               cdkAutosizeMaxRows="5"
               minlength="20"
               maxlength="500"
-              pattern="[\w\[\]`ñáéíóúäëïöü!@#$%\^&*()={}:;<>+'-/\s/]*"
+              pattern="[\w\[\]`ÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ!@#$%\^&*()={}:;<>+'-/\s/]*"
               formControlName="descripcion"
               autocomplete="false"
             ></textarea>
@@ -77,7 +90,7 @@
             <mat-error
               *ngIf="eventoForm.controls['descripcion'].hasError('required')"
             >
-              La descripción es <strong>requerida</strong>
+              La descripción es <strong> requerida</strong>
             </mat-error>
             <mat-error
               *ngIf="eventoForm.controls['descripcion'].hasError('pattern')"
@@ -120,7 +133,7 @@
             <mat-datepicker #picker color="accent"></mat-datepicker>
           </mat-form-field>
           <mat-error *ngIf="eventoForm.controls['fecha'].hasError('required')">
-            La fecha del evento es<strong>requerida</strong>
+            La fecha del evento es <strong>requerida</strong>
           </mat-error>
           <mat-error *ngIf="eventoForm.controls['fecha'].hasError('minlength')">
             La fecha del evento es<strong>inválida</strong>
@@ -129,16 +142,18 @@
             La fecha del evento es<strong>inválida</strong>
           </mat-error>
         </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <mat-label>Seleccione el archivo .xlsx</mat-label>
+        <div class="col" *ngIf="isCreate">
+          <mat-label
+            >Seleccione el archivo del padrón<i class="bx bxs-file-plus"></i
+          ></mat-label>
+          <div></div>
           <button
             mat-raised-button
             type="button"
             title="Subir archivo XLSX"
             (click)="fileInput.click()"
-            color="accent"
+            [color]="srcFileResult ? 'accent' : 'primary'"
+            id="btnFile"
           >
             Seleccione el archivo
           </button>
@@ -149,12 +164,11 @@
             accept=".xlsx"
             type="file"
           />
-          <mat-label *ngIf="srcFileResult"
-            >¡Padrón cargado éxitosamente! <i
-              class="bx bxs-cloud-upload bx-tada"
-              style="color: #000000"
-            ></i
-          ></mat-label>
+          <div></div>
+          <p *ngIf="srcFileResult">
+            ¡Padrón cargado éxitosamente!
+            <i class="bx bxs-cloud-upload bx-tada" style="color: #000000"></i>
+          </p>
           <mat-error *ngIf="!srcFileResult">
             El padrón de evento es <strong>requerido</strong>
           </mat-error>
@@ -168,6 +182,7 @@
         type="button"
         (click)="onBack()"
         title="Regresar a la página anterior"
+        id="btnBack"
       >
         Regresar
       </button>
@@ -176,6 +191,7 @@
         color="primary"
         type="submit"
         [title]="isCreate ? 'Guardar evento' : 'Actualizar evento'"
+        id="btnSave"
       >
         {{ isCreate ? "Guardar" : "Actualizar" }}
       </button>

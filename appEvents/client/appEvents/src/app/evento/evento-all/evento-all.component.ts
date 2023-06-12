@@ -24,7 +24,7 @@ export class EventoAllComponent implements AfterViewInit {
   dataSource = new MatTableDataSource<any>();
 
   //* Columnas para la tabla
-  displayedColumns = ['nombre', "fecha", "estado", "padron", "reporte","cierre"];
+  displayedColumns = ['nombre', "fecha", "estado", "padron", "reporte", "cierre"];
 
   constructor(private router: Router,
     private route: ActivatedRoute, private gService: GenericService,
@@ -32,19 +32,20 @@ export class EventoAllComponent implements AfterViewInit {
   }
 
   ngOnInit(): void {
-    //* Encargado de notificar un create
-    console.log('Sí funciona el on init');
-    this.route.params.subscribe((params: Params) => {
-      const isCreate = params['create']; //* Obtenemos el params que debería ser true
-      if (isCreate != undefined && isCreate != null) {
-        const nombreEvent = params['nombre'];
-        this.notificacion.mensaje(
-          'Evento',
-          `¡Se ha creado exitosamente el evento ${nombreEvent}!`,
-          TipoMessage.success
-        );
-      }
-    });
+    //* Variables del params
+    let isCreate: any = false;
+    let nombreEvento: string = '';
+
+    //* Encargado de notificar un update
+    isCreate = this.route.snapshot.queryParams['create'] === 'true' || false;
+    nombreEvento = this.route.snapshot.queryParams['nombre'] || ' ';
+    if (isCreate) {
+      this.notificacion.mensaje(
+        `Evento`,
+        `¡Se ha creado el evento: ${nombreEvento}!`,
+        TipoMessage.success
+      );
+    }
   }
 
   ngAfterViewInit(): void {
@@ -59,7 +60,7 @@ export class EventoAllComponent implements AfterViewInit {
       .subscribe((data: any) => {
         console.log(data.events);
         //* Ordenamos por fecha
-        this.datos = data.events.sort((a : any, b : any) => a.fecha.getTime - b.fecha.getTime);
+        this.datos = data.events.sort((a: any, b: any) => a.fecha.getTime - b.fecha.getTime);
         console.log('Sort data:');
         console.log(this.datos);
         this.dataSource = new MatTableDataSource(this.datos);

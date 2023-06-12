@@ -33,19 +33,26 @@ export class EventoIndexComponent implements OnInit {
   ngOnInit(): void {
     //! Si no se encuentra autenticado sacar con un router, ejemplo de seguridad en orden y header
     this.loadUser();
+    this.mensajes();
+  }
+
+  //* Nota: RECUERDE QUE NO ES LO MISMO PARAMS QUE QUERYPARAMS
+
+  mensajes(): void {
+    //* Variables del params
+    let isUpdate: any = false;
+    let nombreEvento: string = '';
 
     //* Encargado de notificar un update
-    this.route.params.subscribe((params: Params) => {
-      const isUpdate = params['update'];
-      if (isUpdate != undefined && isUpdate != null) {
-        const nombreEvento = params['nombre'];
-        this.notificacion.mensaje(
-          `Evento`,
-          `¡Se ha modificado el evento: ${nombreEvento}!`,
-          TipoMessage.success
-        );
-      }
-    });
+    isUpdate = this.route.snapshot.queryParams['update'] === 'true' || false;
+    nombreEvento = this.route.snapshot.queryParams['nombre'] || ' ';
+    if (isUpdate) {
+      this.notificacion.mensaje(
+        `Evento`,
+        `¡Se ha modificado el evento: ${nombreEvento}!`,
+        TipoMessage.success
+      );
+    }
   }
 
   //* Cargamos una lista con los eventos

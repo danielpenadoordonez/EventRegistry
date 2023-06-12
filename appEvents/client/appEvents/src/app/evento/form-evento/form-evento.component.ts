@@ -98,10 +98,10 @@ export class FormEventoComponent implements OnInit {
       id: null, //* Id del evento
       id_usuario: null, //* Se obtiene del servicio
       nombre: [null, Validators.compose([
-        Validators.required, Validators.minLength(5), Validators.maxLength(100), Validators.pattern(/[\w\[\]`ñáéíóúäëïöü!@#$%\^&*()={}:;<>+'-/\s/]*/)])
+        Validators.required, Validators.minLength(5), Validators.maxLength(100), Validators.pattern(/[\w\[\]`ÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ!@#$%\^&*()={}:;<>+'-/\s/]*/)])
       ], //* Nombre del evento
       descripcion: [null, Validators.compose([
-        Validators.required, Validators.minLength(20), Validators.maxLength(500), Validators.pattern(/[\w\[\]`ñáéíóúäëïöü!@#$%\^&*()={}:;<>+'-/\s/]*/)])
+        Validators.required, Validators.minLength(20), Validators.maxLength(500), Validators.pattern(/[\w\[\]`ÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ!@#$%\^&*()={}:;<>+'-/\s/]*/)])
       ], //* Descripción del evento
       fecha: [null, Validators.compose([
         Validators.required, Validators.minLength(6), Validators.maxLength(10)])
@@ -162,7 +162,7 @@ export class FormEventoComponent implements OnInit {
           {
             queryParams: {
               create: 'true',
-              nombre: `${this.eventoForm.get('nombre')}`
+              nombre: `${this.eventoForm.value.nombre}`
             }
           });
       });
@@ -187,15 +187,15 @@ export class FormEventoComponent implements OnInit {
     //! El usuario no se actualiza, ni id, ni estado
     //? Puedo actualizar fecha, nombre y descripción [FRONT]
 
-    this.gService.update('event-update', this.eventoForm.value)
+    this.gService.update('update-event?event_id=', this.eventoForm.value)
       .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
         //* Obtener respuesta del API
         this.respEvento = data;
-        this.router.navigate(['/evento/'],
+        this.router.navigate(['/evento'],
           {
             queryParams: {
               update: 'true',
-              nombre: `${this.eventoForm.get('nombre')}`
+              nombre: `${this.eventoForm.value.nombre}`
             }
           });
       });
@@ -216,6 +216,7 @@ export class FormEventoComponent implements OnInit {
         'No se pueden ingresar más de 1 archivo',
         TipoMessage.error
       );
+      //* Cambiamos
       this.srcFileResult = undefined;
       return;
     }
@@ -226,18 +227,18 @@ export class FormEventoComponent implements OnInit {
         'Por favor, ingrese un documento válido',
         TipoMessage.error
       );
+      //* Cambiamos
       this.srcFileResult = undefined;
       return;
     }
 
     //* Notificaciones
-    if (this.srcFileResult !== 'undefined') {
-      this.notificacion.mensaje(
-        'Evento - Padrón',
-        'Se ha actualizado el padrón',
-        TipoMessage.info
-      );
-    }
+    this.notificacion.mensaje(
+      'Evento - Padrón',
+      `Se ha ${this.srcFileResult !== undefined ? 'actualizado' : 'subido'} el padrón`,
+      this.srcFileResult !== undefined ? TipoMessage.info : TipoMessage.success
+    );
+
 
     const reader: FileReader = new FileReader();
     reader.readAsBinaryString(target.files[0]);
@@ -265,7 +266,7 @@ export class FormEventoComponent implements OnInit {
     const rspdata = { //* Enviar data
       data: [this.respEvento]
     };
-    this.gService.create('upload-padron', rspdata)
+    this.gService.create('update-padron', rspdata)
       .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
         //* Obtener respuesta
         this.respExcel = data;
@@ -302,10 +303,10 @@ export class FormEventoComponent implements OnInit {
 
   //* Volver
   onBack(): void {
-    if(this.isCreate){
+    if (this.isCreate) {
       this.router.navigate(['/evento/all']);
       return; //? Puede ser redundante
-    } else{
+    } else {
       this.router.navigate(['/evento/']);
       return;
     }
