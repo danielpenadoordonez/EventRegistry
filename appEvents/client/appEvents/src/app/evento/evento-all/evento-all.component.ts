@@ -58,7 +58,6 @@ export class EventoAllComponent implements AfterViewInit {
       .list('get-events')
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
-        console.log(data.events);
         //* Ordenamos por fecha
         this.datos = data.events.sort((a: any, b: any) => a.fecha.getTime - b.fecha.getTime);
         console.log('Sort data:');
@@ -116,14 +115,10 @@ export class EventoAllComponent implements AfterViewInit {
   //* Generar reporte del evento
   generarReporte(idEvent: number, nombreEvento: string): void {
     this.router.navigate(['/member/reportePdf/', idEvent], {
-      relativeTo: this.route
+      relativeTo: this.route, queryParams: {
+        name: nombreEvento
+      }
     });
-
-    this.notificacion.mensaje(
-      `Evento`,
-      `¡Se ha creado el reporte del evento: ${nombreEvento}!`,
-      TipoMessage.success
-    );
   }
 
   //* Desplegar el confirmbox para saber si quiere o no cerrar el evento
@@ -151,7 +146,6 @@ export class EventoAllComponent implements AfterViewInit {
 
       //* Llamamos al confirm box
       confirmBox.openConfirmBox$().subscribe(resp => {
-        console.log('Confirm box: ', resp);
         this.isConfirmBoxActive = !this.isConfirmBoxActive; //* Cambiamos de nuevo
         if (resp.success) {
           this.notificacion.mensaje(
@@ -208,7 +202,6 @@ export class EventoAllComponent implements AfterViewInit {
       .list('get-eventos/')
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
-        console.log(data);
         this.datos = data.sort((a, b) => a.date.getTime() - b.date.getTime());
         this.dataSource = new MatTableDataSource(this.datos);
         this.dataSource.sort = this.sort;

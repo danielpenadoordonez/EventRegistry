@@ -37,14 +37,13 @@ export class MiembroAllComponent implements OnInit {
 
   constructor(private router: Router,
     private route: ActivatedRoute, private gService: GenericService, private notificacion: NotificacionService,
-    private authService: AuthenticationService,) {
+    private authService: AuthenticationService) {
   } //* Constructor vacío
 
   //* Método encargado de cargar el id event 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
       this.idEvent = params['id'] || ' ';
-      console.log(this.idEvent);
     });
   }
 
@@ -52,7 +51,6 @@ export class MiembroAllComponent implements OnInit {
   notification(valor: boolean): void {
     //* Notificación de padrón - QueryParams
     let isLoaded: any = false;
-    let eventName: any = ' ';
 
     isLoaded = this.route.snapshot.queryParams['padron'] === 'true' || false;
     if (isLoaded && valor) {

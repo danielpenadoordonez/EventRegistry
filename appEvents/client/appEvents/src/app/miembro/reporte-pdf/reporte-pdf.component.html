@@ -1,1 +1,65 @@
-<p>reporte-pdf works!</p>
+<mat-card class="shipping-card">
+  <mat-card-content>
+    <section id="htmlData" class="ftco-section">
+      <div class="container">
+        <div class="row justify-content-center"></div>
+        <div class="row">
+          <div class="col-md-12">
+            <h4 class="text-center mb-4">
+              Reporte Del Evento {{ this.eventName || "" | titlecase }}
+            </h4>
+            <div class="table-wrap">
+              <table class="table">
+                <thead class="thead-primary">
+                  <tr>
+                    <th>TLD</th>
+                    <th>Duration</th>
+                    <th>Registration</th>
+                    <th>Renewal</th>
+                    <th>Transfer</th>
+                    <th>Register</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- * Cargamos la data del PDF aquí -->
+                  <!-- * <tr *ngFor="let item of datos">
+                      <th scope="row" class="scope">{{ item.nombre }}</th>
+                      <td>&dollar;{{ item.total }}</td>
+                      <td class="border-bottom-0">1 Year</td>
+                      <td class="border-bottom-0">1 Year</td>
+                      <td class="border-bottom-0">1 Year</td>
+                      <td class="border-bottom-0">1 Year</td>
+                    </tr> -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <mat-card-actions>
+      <div>
+        <button
+          mat-flat-button
+          id="btnBack"
+          (click)="onBack()"
+          title="Volver a la página anterior"
+        >
+          Volver
+          <mat-icon>keyboard_backspace</mat-icon>
+        </button>
+      </div>
+      <div class="col-md-4 text-right">
+        <button
+          mat-flat-button
+          color="accent"
+          (click)="openPDF()"
+          title="Descargar documento PDF"
+        >
+          Descargar PDF
+          <mat-icon>cloud_download</mat-icon>
+        </button>
+      </div>
+    </mat-card-actions>
+  </mat-card-content>
+</mat-card>
