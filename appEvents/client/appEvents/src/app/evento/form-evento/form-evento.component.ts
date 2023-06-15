@@ -299,6 +299,7 @@ export class FormEventoComponent implements OnInit {
   onReset(): void {
     this.submitted = false;
     this.eventoForm.reset();
+    this.respExcel = undefined; //* Limpiamos
   }
 
   //* Volver

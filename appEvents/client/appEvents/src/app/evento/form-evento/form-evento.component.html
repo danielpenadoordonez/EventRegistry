@@ -155,7 +155,7 @@
             [color]="srcFileResult ? 'accent' : 'primary'"
             id="btnFile"
           >
-            Seleccione el archivo
+            Seleccione el archivo <i class='bx bxs-cloud-upload bx-fade-up' style='color:#ffffff' ></i>
           </button>
           <input
             hidden
@@ -186,6 +186,16 @@
       >
         Regresar
       </button>
+      <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      (click)="onReset()"
+      title="Limpiar los campos ingresados"
+      id="btnReset"
+    >
+      Regresar
+    </button>
       <button
         mat-raised-button
         color="primary"
