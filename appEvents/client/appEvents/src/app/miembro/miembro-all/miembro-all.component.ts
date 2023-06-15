@@ -26,7 +26,7 @@ export class MiembroAllComponent implements OnInit {
 
   dataSource = new MatTableDataSource<any>();
 
-  displayedColumns = ['id', 'nombreCompleto', "numeroCedula", "estatus1", "correo", "telefono", "presente", "accion"];
+  displayedColumns = ['id', 'nombreCompleto', "numeroCedula", "estatus1", "correo", "telefono", "confirmado", "presente", "accion"];
   // id INT NOT NULL, 
   // NombreCompleto VARCHAR(250)  NOT NULL, 
   // NumeroCedula VARCHAR(15) UNIQUE NOT NULL, 
