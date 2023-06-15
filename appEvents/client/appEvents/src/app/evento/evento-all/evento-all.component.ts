@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ViewChild, OnInit } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, identity, takeUntil } from 'rxjs';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { GenericService } from 'src/app/share/generic.service';
 import { NotificacionService, TipoMessage } from 'src/app/share/notification.service';
@@ -82,30 +82,48 @@ export class EventoAllComponent implements AfterViewInit {
     });
   }
 
-  //! RECUERDE LAS CONDICIONES PARA PDOER USAR ESTOS BOTONES
   //? Se puede hacer siempre y cuando el evento esté abierto
   //* Sirve para registrar la asistencia
-  editarPadron(id: any): void {
-    this.router.navigate(['/evento/update-padron/'], {
-      queryParams: { id: id }
+  editarPadron(idEvent: number, nombreEvent: string): void {
+    //* params, no queryparams
+    this.router.navigate(['/member/all-padron/', idEvent], {
+      relativeTo: this.route,
+      queryParams: {
+        padron: 'true',
+        nombre: `${nombreEvent}`
+      }
     });
   }
 
   //* Cerrar evento, llama a un API que actualiza el estado del evento
-  cerrarEvento(id: any): void {
-    this.gService.update('close-event', id).pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
+  cerrarEvento(idEvent: number, nombreEvento: string): void {
+    //? Para marcar como presente al miembro sí que necesito al usuario
+    this.gService.update('close-event', idEvent).pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
       //* Obtener la data
       console.log(data);
+      //! Notificación de cerrado 
     });
-    this.refreshData();
-    //* Notificar que se cerró el evento, tal vez con query params y redirigiendo como update
+
+    this.notificacion.mensaje(
+      `Evento`,
+      `¡Se ha cerrado el evento: ${nombreEvento}!`,
+      TipoMessage.success
+    );
+
+    this.refreshData(); //* Por si acaso
   }
 
   //* Generar reporte del evento
-  generarReporte(id: any): void {
-    this.router.navigate(['/evento/reportePDF/'], {
-      queryParams: { id: id }
+  generarReporte(idEvent: number, nombreEvento: string): void {
+    this.router.navigate(['/member/reportePdf/', idEvent], {
+      relativeTo: this.route
     });
+
+    this.notificacion.mensaje(
+      `Evento`,
+      `¡Se ha creado el reporte del evento: ${nombreEvento}!`,
+      TipoMessage.success
+    );
   }
 
   //* Desplegar el confirmbox para saber si quiere o no cerrar el evento
@@ -141,7 +159,7 @@ export class EventoAllComponent implements AfterViewInit {
             `Se ha cerrado exitosamente el evento ${nombre}`,
             TipoMessage.info
           );
-          this.cerrarEvento(id);
+          this.cerrarEvento(id, nombre);
         } else {
           this.notificacion.mensaje(
             'Evento',
@@ -151,6 +169,37 @@ export class EventoAllComponent implements AfterViewInit {
         }
       });
     }
+  }
+
+  //* Método encargado de permitir o no generar el pdf
+  isReportAvailable(fecha: any): boolean {
+    let validadora: boolean = true;
+    let fechaActual: Date = new Date();
+    let fechaEvento: Date = new Date(fecha);
+    validadora = (fechaActual.getTime() >= fechaEvento.getTime()); //* >= o sea incluye el mismo día y los anteriores o está cerrado
+
+    return !validadora; //* Se invierte el valor al ser un disabled
+  }
+
+  isCierreAvailabe(abierto: number, fecha: any): boolean {
+    let validadora: boolean = true;
+    let fechaActual: Date = new Date();
+    let fechaEvento: Date = new Date(fecha);
+    validadora = (fechaActual.getTime() > fechaEvento.getTime()) && abierto != 0; //* Es mayor o sea ya pasó 1 día al menos y está abierto
+    //* en cuanto al estado tiene que ser distinto de 0 o sea cerrado
+
+    return !validadora;
+  }
+
+  //* Validación sobre el padrón
+  isPadronAvailable(abierto: number, fecha: any): boolean {
+    let validadora: boolean = true; //* Inicializamos en false la variable o sea debería estar bien
+    let fechaActual: Date = new Date();
+    let fechaEvento: Date = new Date(fecha);
+    validadora = (fechaActual.getMonth() == fechaEvento.getMonth() ? fechaActual.getDate() <= fechaEvento.getDate() :
+      fechaActual.getTime() <= fechaEvento.getTime()) && abierto == 1; //* la fecha actual es menor o igual a la del día del evento
+
+    return !validadora;
   }
 
   //* Método encargado de refrescar la Data

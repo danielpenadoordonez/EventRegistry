@@ -13,6 +13,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { OrdenModule } from './orden/orden.module';
 import { HttpErrorInterceptorService } from './share/http-error-interceptor.service';
 import { EventoModule } from './evento/evento.module';
+import { MiembroModule } from './miembro/miembro.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,12 +24,13 @@ import { EventoModule } from './evento/evento.module';
     
     // ? importar los módulos creados propios en orden 
     CoreModule, 
-    EventoModule,
     ShareModule, 
     HomeModule, 
     UserModule, 
     VideojuegoModule, 
     OrdenModule,
+    EventoModule,
+    MiembroModule,
     // ? al final el gestor de las rutas principal 
     AppRoutingModule,
   ],

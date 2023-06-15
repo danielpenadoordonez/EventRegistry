@@ -1,0 +1,104 @@
+<!-- ! Reset button form para evento -->
+<mat-card class="full-width">
+  <mat-card-title>
+    <a
+      {{`Padrón
+      del
+      evento
+      ${this.eventName}`
+      |
+      titlecase}}
+      mat-fab
+      matTooltip="Añadir miembro al padrón"
+      aria-label="Añadir miembro al padrón"
+      color="primary"
+      (click)="crearMiembro()"
+    >
+      <mat-icon>note_add</mat-icon>
+    </a>
+  </mat-card-title>
+  <mat-card-content>
+    <div class="mat-elevation-z8" *ngIf="dataSource">
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        class="full-width-table"
+        matSort
+        matSortStart="desc"
+        aria-label="Elements"
+      >
+        <!-- * Columna identificador -->
+        <ng-container matColumnDef="id">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            title="Identificador del miembro"
+          >
+            Id
+          </th>
+          <td mat-cell *matCellDef="let row" title="Identificador del miembro">
+            {{ row.id }}
+          </td>
+        </ng-container>
+
+        <!-- * Columna nombre -->
+        <ng-container matColumnDef="nombre">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            title="Nombre Completo"
+          >
+            Nombre
+          </th>
+          <td mat-cell *matCellDef="let row" title="Nombre Completo">
+            {{ row.nombreCompleto }}
+          </td>
+        </ng-container>
+
+        <!-- * Columna Número Cédula -->
+        <ng-container matColumnDef="numeroCedula">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header title="Número de cédula del miembro">Número de cédula</th>
+          <td mat-cell *matCellDef="let row" title="Número de cédula del miembro">{{ row.numeroCedula }}</td>
+        </ng-container>
+
+        
+
+        <!-- * Botón encargado de marcar como presente -->
+        <ng-container matColumnDef="accion">
+          <th mat-header-cell *matHeaderCellDef>Actualizar</th>
+          <td mat-cell *matCellDef="let row">
+            <button
+              mat-mini-fab
+              matTooltip="Actualizar Videjuego"
+              aria-label="Actualizar Videjuego"
+              color="primary"
+              (click)="showConfirmationBox(row.id)"
+            >
+              <mat-icon class="mat-18">edit</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky: true"
+        ></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <mat-paginator
+        #paginator
+        [length]="dataSource?.data?.length"
+        [pageIndex]="0"
+        [pageSize]="5"
+        [pageSizeOptions]="[3, 5, 10]"
+        aria-label="Seleccione una pagina"
+      >
+      </mat-paginator>
+    </div>
+  </mat-card-content>
+  <!-- ! Reset button form para evento -->
+  <!-- ! Botón para regresar -->
+</mat-card>

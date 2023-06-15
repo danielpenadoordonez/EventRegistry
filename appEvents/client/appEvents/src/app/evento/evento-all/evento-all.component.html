@@ -11,7 +11,6 @@
     >
       <mat-icon>add</mat-icon>
     </a>
-    
   </mat-card-title>
   <mat-card-content>
     <!-- ? si se carga la data -->
@@ -63,7 +62,13 @@
             Estado
           </th>
           <td mat-cell *matCellDef="let row">
-            {{ row.abierto == 1 ? "Abierto" : "Cerrado" }} <i class='bx bx-lock' *ngIf="row.abierto != 1"></i> <i class='bx bxs-lock-open' style='color:#ffffff' *ngIf="row.abierto == 1" ></i>
+            {{ row.abierto == 1 ? "Abierto" : "Cerrado" }}
+            <i class="bx bx-lock" *ngIf="row.abierto != 1"></i>
+            <i
+              class="bx bxs-lock-open"
+              style="color: #ffffff"
+              *ngIf="row.abierto == 1"
+            ></i>
           </td>
         </ng-container>
 
@@ -81,10 +86,41 @@
               mat-mini-fab
               matTooltip="Actualizar padrón del evento"
               aria-label="Actualizar padrón del evento"
-              title="Actualizar padrón del evento"
-              (click)="editarPadron(row.event_id)"
+              [title]="
+                !isPadronAvailable(row.abierto, row.fecha)
+                  ? 'Actualizar padrón del evento'
+                  : 'El padrón está cerrado'
+              "
+              (click)="editarPadron(row.event_id, row.nombre)"
+              [disabled]="isPadronAvailable(row.abierto, row.fecha)"
             >
               <mat-icon class="mat-18">insert_invitation</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="reporte">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            title="Generar reporte del evento seleccionado"
+          >
+            Reporte
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <button
+              mat-mini-fab
+              matTooltip="Generar reporte PDF del evento"
+              aria-label="Generar reporte PDF del evento"
+              [disabled]="isReportAvailable(row.fecha)"
+              [title]="
+                isReportAvailable(row.fecha)
+                  ? 'El evento aún sigue abierto'
+                  : 'Generar reporte PDF del evento'
+              "
+              (click)="generarReporte(row.event_id, row.nombre)"
+            >
+              <mat-icon class="mat-18">picture_as_pdf</mat-icon>
             </button>
           </td>
         </ng-container>
@@ -103,36 +139,16 @@
               matTooltip="Cerrar evento"
               aria-label="Cerrar evento"
               (click)="confirmBoxCerrarEvento(row.event_id, row.nombre)"
-              [disabled]="row.abierto != 1"
+              [disabled]="isCierreAvailabe(row.abierto, row.fecha)"
               [title]="
-                row.abierto == 1
+                !isCierreAvailabe(row.abierto, row.fecha)
                   ? 'Cerrar evento'
+                  : row.abierto != 0
+                  ? 'El evento aún no se ha llevado acabo'
                   : 'El evento se encuentra cerrado'
               "
             >
               <mat-icon class="mat-18">close</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="reporte">
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            title="Generar reporte del evento seleccio"
-          >
-            Reporte
-          </th>
-          <td mat-cell *matCellDef="let row">
-            <button
-              mat-mini-fab
-              matTooltip="Generar reporte PDF del evento"
-              aria-label="Generar reporte PDF del evento"
-              [disabled]="row.abierto != 0"
-              [title]="row.abierto != 1 ? 'Generar reporte PDF del evento' : 'El evento aún sigue abierto'"
-              (click)="generarReporte(row.event_id)"
-            >
-              <mat-icon class="mat-18">picture_as_pdf</mat-icon>
             </button>
           </td>
         </ng-container>
