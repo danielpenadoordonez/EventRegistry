@@ -7,6 +7,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { AuthenticationService } from 'src/app/share/authentication.service';
 import { GenericService } from 'src/app/share/generic.service';
 import { NotificacionService, TipoMessage } from 'src/app/share/notification.service';
+import { AppearanceAnimation, ConfirmBoxInitializer, DialogLayoutDisplay, DisappearanceAnimation } from '@costlydeveloper/ngx-awesome-popup';
 
 @Component({
   selector: 'app-miembro-all',
@@ -16,8 +17,9 @@ import { NotificacionService, TipoMessage } from 'src/app/share/notification.ser
 export class MiembroAllComponent implements OnInit {
 
   datos: any; //* Data recibida del API
+  isConfirmBoxActive: boolean = false; //* Manejo de ventanas activas
   idEvent: any; //* Id del evento recibido con params
-  eventName : string; //* Propiedad encargada de guardar el nombre del evento
+  eventName: string; //* Propiedad encargada de guardar el nombre del evento
   isAutenticated: boolean; //* Variable encargada de marcar si el usuario está autenticado o no
   currentUser: any; //* Información del usuario actual
   destroy$: Subject<boolean> = new Subject<boolean>(); //* Encargado de destruir las suscripciones
@@ -54,7 +56,7 @@ export class MiembroAllComponent implements OnInit {
 
     isLoaded = this.route.snapshot.queryParams['padron'] === 'true' || false;
     if (isLoaded && valor) {
-      this.eventName  = this.route.snapshot.queryParams['nombre'] || ' ';
+      this.eventName = this.route.snapshot.queryParams['nombre'] || ' ';
       this.notificacion.mensaje(
         'Evento - Padrón',
         `Se ha cargado exitosamente el padrón del evento ${this.eventName}`,
@@ -121,7 +123,7 @@ export class MiembroAllComponent implements OnInit {
             let currentDate: Date = new Date();
             let eventDate: Date = new Date(result.fecha);
             if (result) {
-              if ((currentDate.getMonth() == eventDate.getMonth() ? currentDate.getDate() <= eventDate.getDate()
+              if ((currentDate.getMonth() == eventDate.getMonth() ? currentDate.getDate() <= (eventDate.getDate() + 1)
                 : currentDate.getTime() <= eventDate.getTime()) && (result.abierto)) {
                 resolve(true);
               }
@@ -133,16 +135,86 @@ export class MiembroAllComponent implements OnInit {
   }
 
   //* Método encargado de notificar si quiere o no marcar al miembro seleccionado como presente
-  showConfirmationBox(idMemberSelected: number): void {
+  showConfirmationBox(idMemberSelected: number, status: any, name: string): void {
+    if (!this.isConfirmBoxActive) {
+      this.isConfirmBoxActive = !this.isConfirmBoxActive; //* Cambiamos el estado
+      //* Declaramos las propiedades del confirm box
+      const confirmBox = new ConfirmBoxInitializer();
 
+      confirmBox.setTitle('¿Desea confirmar la presencia?');
+
+      confirmBox.setMessage(`¡Confirme para marcar como presente a ${name}!!`);
+
+      confirmBox.setButtonLabels('Sí', 'No');
+
+
+      //* Elegimos el diseño del confirm box
+      confirmBox.setConfig({
+        layoutType: DialogLayoutDisplay.INFO,
+        animationIn: AppearanceAnimation.BOUNCE_IN,
+        animationOut: DisappearanceAnimation.BOUNCE_OUT
+      });
+
+      //* Llamamos al confirm box
+      confirmBox.openConfirmBox$().subscribe(resp => {
+        //* ¿Qué hacemos?
+        if (resp.success) {
+          this.notificacion.mensaje(
+            'Miembro - Presente',
+            `El miembro ${name.toLowerCase().split(" ")[0]} se ha marcado como presente`,
+            TipoMessage.success
+          );
+          //! QUITAR EL COMENTADO
+          this.setPresente(idMemberSelected, status, name);
+        } else {
+          this.notificacion.mensaje(
+            'Miembro - Info',
+            `Se ha cancelado la acción`,
+            TipoMessage.info
+          );
+        }
+      });
+    }
   }
 
   //* Método encargado de cambiar a presente el usuario y debe registrar quién fue
   //* el usuario que lo colocó como presente
-  setPresente(idMember: number): void {
-    //* Si está como Inactivo no se puede marcar como presente
+  setPresente(idMember: number, estado: any, nombre: string): void {
+    //? Si está como Inactivo no se puede marcar como presente
     //? Recuerde el botón de sí o no
-    this.currentUser.user.id;
+    if (estado) {
+      let currentDate: Date = new Date();
+
+      //* preparamos la data para el update/put
+      const response: any = {
+        id_memeber: idMember,
+        id_event: this.idEvent,
+        id_user: this.currentUser.user.id,
+        date: currentDate
+      };
+
+      //* Actualizar
+      this.gService
+        .update('update-member/', response) //! CAMBIAR AQUÍ
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((data: any) => {
+          console.log(data);
+        });
+
+      //* Notificar
+      this.notificacion.mensaje(
+        'Padrón - Presente',
+        `Se ha confirmado la asistencia del miembro ${nombre.toLowerCase().split(" ")[0]}`,
+        TipoMessage.info
+      );
+    } else {
+      //* Notificar
+      this.notificacion.mensaje(
+        'Padrón - Error',
+        `El miembro ${nombre.toLowerCase().split(" ")[0]} se encuentra inactivo`,
+        TipoMessage.error
+      );
+    }
   }
 
   //* Método encargado de redirigir para crear un miembro

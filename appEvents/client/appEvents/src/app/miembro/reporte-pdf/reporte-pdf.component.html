@@ -12,24 +12,33 @@
               <table class="table">
                 <thead class="thead-primary">
                   <tr>
-                    <th>TLD</th>
-                    <th>Duration</th>
-                    <th>Registration</th>
-                    <th>Renewal</th>
-                    <th>Transfer</th>
-                    <th>Register</th>
+                    <th title="Número de cédula del miembro">Cédula</th>
+                    <th title="Nombre completo del miembro">Nombre</th>
+                    <th title="Día del evento">Día</th>
+                    <th title="Hora de llegada del miembro">Hora</th>
+                    <th title="Confirmación previa de asistencia">
+                      Confirmado
+                    </th>
+                    <th title="Usuario que lo registró">Usuario</th>
                   </tr>
+                  <!-- * cédula, el nombre, si el miembro confirmó, la hora en que se presentó, el día de evento y además el usuario que registró su ingreso.   -->
                 </thead>
                 <tbody>
                   <!-- * Cargamos la data del PDF aquí -->
-                  <!-- * <tr *ngFor="let item of datos">
-                      <th scope="row" class="scope">{{ item.nombre }}</th>
-                      <td>&dollar;{{ item.total }}</td>
-                      <td class="border-bottom-0">1 Year</td>
-                      <td class="border-bottom-0">1 Year</td>
-                      <td class="border-bottom-0">1 Year</td>
-                      <td class="border-bottom-0">1 Year</td>
-                    </tr> -->
+                  <!-- <tr *ngFor="let register of datos">
+                    <th scope="row" class="scope">
+                      {{ register.numeroCedula }}
+                    </th>
+                    <th class="border-bottom-0">{{ register.nombre }}</th>
+                    <td class="border-bottom-0">
+                      {{ register.fecha | date : "shortTime" }}
+                    </td>
+                    <td class="border-bottom-0">
+                      {{ register.fecha | date : "shortTime" }}
+                    </td>
+                    <td class="border-bottom-0">{{ register.confirmado }}</td>
+                    <td class="border-bottom-0">{{ register.user }}</td>
+                  </tr> -->
                 </tbody>
               </table>
             </div>

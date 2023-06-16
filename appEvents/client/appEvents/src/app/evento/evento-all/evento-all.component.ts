@@ -2,8 +2,8 @@ import { AfterViewInit, Component, ViewChild, OnInit } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Subject, identity, takeUntil } from 'rxjs';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 import { GenericService } from 'src/app/share/generic.service';
 import { NotificacionService, TipoMessage } from 'src/app/share/notification.service';
 import { AppearanceAnimation, ConfirmBoxInitializer, DialogLayoutDisplay, DisappearanceAnimation } from '@costlydeveloper/ngx-awesome-popup';
@@ -96,7 +96,6 @@ export class EventoAllComponent implements AfterViewInit {
 
   //* Cerrar evento, llama a un API que actualiza el estado del evento
   cerrarEvento(idEvent: number, nombreEvento: string): void {
-    //? Para marcar como presente al miembro sí que necesito al usuario
     this.gService.update('close-event', idEvent).pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
       //* Obtener la data
       console.log(data);
@@ -165,6 +164,8 @@ export class EventoAllComponent implements AfterViewInit {
     }
   }
 
+  //! WARNING, POR ALGÚN MOTIVO EL GET DATE RESTA 1 DÍA A LAS FECHAS CON FORMATO yyyy-MM-dd
+
   //* Método encargado de permitir o no generar el pdf
   isReportAvailable(fecha: any): boolean {
     let validadora: boolean = true;
@@ -175,23 +176,23 @@ export class EventoAllComponent implements AfterViewInit {
     return !validadora; //* Se invierte el valor al ser un disabled
   }
 
-  isCierreAvailabe(abierto: number, fecha: any): boolean {
+  isCierreAvailabe(abierto: boolean, fecha: any): boolean {
     let validadora: boolean = true;
     let fechaActual: Date = new Date();
     let fechaEvento: Date = new Date(fecha);
-    validadora = (fechaActual.getTime() > fechaEvento.getTime()) && abierto != 0; //* Es mayor o sea ya pasó 1 día al menos y está abierto
+    validadora = (fechaActual.getTime() > fechaEvento.getTime()) && abierto; //* Es mayor o sea ya pasó 1 día al menos y está abierto
     //* en cuanto al estado tiene que ser distinto de 0 o sea cerrado
 
     return !validadora;
   }
 
   //* Validación sobre el padrón
-  isPadronAvailable(abierto: number, fecha: any): boolean {
+  isPadronAvailable(abierto: boolean, fecha: any): boolean {
     let validadora: boolean = true; //* Inicializamos en false la variable o sea debería estar bien
     let fechaActual: Date = new Date();
     let fechaEvento: Date = new Date(fecha);
-    validadora = (fechaActual.getMonth() == fechaEvento.getMonth() ? fechaActual.getDate() <= fechaEvento.getDate() :
-      fechaActual.getTime() <= fechaEvento.getTime()) && abierto == 1; //* la fecha actual es menor o igual a la del día del evento
+    validadora = ((fechaActual.getMonth() == fechaEvento.getMonth() ? fechaActual.getDate() <= (fechaEvento.getDate() + 1) :
+      fechaActual.getTime() <= fechaEvento.getTime()) && abierto); //* la fecha actual es menor o igual a la del día del evento
 
     return !validadora;
   }
