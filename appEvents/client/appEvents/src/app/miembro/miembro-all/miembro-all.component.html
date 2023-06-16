@@ -87,7 +87,7 @@
             Estado
           </th>
           <td mat-cell *matCellDef="let row" title="Estado del miembro">
-            {{ row.estatus == 1 ? 'Activo/a' : 'Inactivo/a' }}
+            {{ row.estatus == 1 ? "Activo/a" : "Inactivo/a" }}
           </td>
         </ng-container>
 
@@ -127,19 +127,22 @@
 
         <!-- * Columna Confirmado -->
         <ng-container matColumnDef="confirmado">
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              mat-sort-header
-              title="Confirmada la asistencia al evento"
-            >
-              Confirmado
-            </th>
-            <td mat-cell *matCellDef="let row" title="Confirmada la asistencia al evento">
-              {{ row.confirmado == 1 ? 'Sí' : 'No' }}
-            </td>
-          </ng-container>
-
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            title="Confirmada la asistencia al evento"
+          >
+            Confirmado
+          </th>
+          <td
+            mat-cell
+            *matCellDef="let row"
+            title="Confirmada la asistencia al evento"
+          >
+            {{ row.confirmado == 1 ? "Sí" : "No" }}
+          </td>
+        </ng-container>
 
         <!-- * Columna Presente -->
         <ng-container matColumnDef="presente">
@@ -151,8 +154,12 @@
           >
             Presente
           </th>
-          <td mat-cell *matCellDef="let row" title="Presencia del miembro en el evento">
-            {{ row.presente == 1 ? 'Presente' : 'Ausente' }}
+          <td
+            mat-cell
+            *matCellDef="let row"
+            title="Presencia del miembro en el evento"
+          >
+            {{ row.presente == 1 ? "Presente" : "Ausente" }}
           </td>
         </ng-container>
 
@@ -166,7 +173,7 @@
               aria-label="Marcar como presente al miembro"
               title="Marcar como presente al miembro"
               color="primary"
-              (click)="showConfirmationBox(row.id)"
+              (click)="showConfirmationBox(row.id, row.estatus1, row.nombreCompleto)"
             >
               <mat-icon class="mat-18">edit</mat-icon>
             </button>
@@ -193,17 +200,18 @@
   </mat-card-content>
   <mat-card-actions>
     <button
-    mat-raised-button
-    color="primary"
-    type="button"
-    (click)="onBack()"
-    title="Regresar a la página anterior"
-    id="btnBack"
-  >
-    Regresar
-  </button>
+      mat-raised-button
+      color="primary"
+      type="button"
+      (click)="onBack()"
+      title="Regresar a la página anterior"
+      id="btnBack"
+    >
+      Regresar
+    </button>
   </mat-card-actions>
-  <!-- ! yes / no -->
   <!-- ! form create member -->
+  <!-- ! eventos expirados -->
+  <!-- ! pestañas del nav -->
   <!-- ! Seguridad & filtros -->
 </mat-card>

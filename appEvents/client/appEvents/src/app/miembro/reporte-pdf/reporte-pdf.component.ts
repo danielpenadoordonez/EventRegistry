@@ -28,25 +28,28 @@ export class ReportePdfComponent implements OnInit {
       this.idEvent = params['id'] || ' ';
       if (this.idEvent == ' ') {
         this.notificacion.mensaje(
-          'Reporte PDF',
+          'Reporte PDF - Error',
           'Por favor, ingrese un evento válido',
           TipoMessage.error
         );
         this.onBack();
       } else {
         this.eventName = this.route.snapshot.queryParams['name'] || ' ';
-        this.notification()
       }
     });
   }
 
   //* Sucede luego de cargar los params
-  ngAfterViewInit(): void {
+  async ngAfterViewInit(): Promise<void> {
     //! Validaciones tochas
-    //! Cargar data según lo especificado en la historia [HTML]
+    let valor = await this.isValidReport();
+    this.notification(valor);
 
-    //? quitar comentario
-    //! this.listaMiembrosPadron();
+    if (valor) {
+      //? quitar comentario
+      //! this.listaMiembrosPadron(); //* Cargamos la lista
+    } else
+      this.onBack(); //* Redirigimos
   }
 
   //* Carga la lista de los miembros asistentes a X evento y otros datos
@@ -60,12 +63,44 @@ export class ReportePdfComponent implements OnInit {
   }
 
   //* Método encargado de notificar
-  notification(): void {
-    this.notificacion.mensaje(
-      `Evento`,
-      `¡Se ha creado el reporte del evento ${': ' + this.eventName || this.idEvent}!`,
-      TipoMessage.success
-    );
+  notification(valor: boolean): void {
+    if(valor){
+      this.notificacion.mensaje(
+        `Reporte PDF - Evento`,
+        `¡Se ha creado correctamente el reporte del evento ${': ' + this.eventName || this.idEvent}!`,
+        TipoMessage.success
+      );
+    } else{
+      this.notificacion.mensaje(
+        `Reporte PDF - Error`,
+        `¡El evento ingresado ${this.eventName != ' ' ? ': ' + this.eventName : ' '} aún no puede generar un reporte!`,
+        TipoMessage.error
+      );
+    }
+  }
+
+  //* Método encargado de verificar si el evento ingresado admite un reporte
+  isValidReport(): Promise<any> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        this.gService
+          .get('get-event', `event_id=${this.idEvent}`)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((data: any) => {
+            let result: any = data;
+            let currentDate: Date = new Date();
+            let eventDate: Date = new Date(result.fecha);
+            if (result) {
+              //* Para generar un reporte tiene ser el mismo día o mayor o tiene que estar cerrado
+              if ((currentDate.getMonth() == eventDate.getMonth() ? currentDate.getDate() >= (eventDate.getDate() + 1)
+                : currentDate.getTime() >= eventDate.getTime()) || (!result.abierto)) { //* O sea cerrado
+                resolve(true);
+              }
+            }
+            resolve(false);
+          });
+      }, 100);
+    });
   }
 
   //* Método encargado de cargar el PDF

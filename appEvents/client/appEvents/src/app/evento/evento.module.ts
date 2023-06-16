@@ -18,7 +18,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatDialogModule } from "@angular/material/dialog";
 import { EventoIndexComponent } from './evento-index/evento-index.component';
 import { EventoDetailComponent } from './evento-detail/evento-detail.component';
-import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import {
   ConfirmBoxConfigModule,
