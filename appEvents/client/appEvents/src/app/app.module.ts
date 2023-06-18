@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -35,7 +34,7 @@ import { MiembroModule } from './miembro/miembro.module';
     AppRoutingModule,
   ],
   providers: [ { provide: HTTP_INTERCEPTORS, 
-    useClass: HttpErrorInterceptorService, multi: true }, ],
+    useClass: HttpErrorInterceptorService, multi: true }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

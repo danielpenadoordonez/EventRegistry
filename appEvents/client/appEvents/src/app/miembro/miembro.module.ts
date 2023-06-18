@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { MiembroRoutingModule } from './miembro-routing.module';
 import { FormMemberComponent } from './form-member/form-member.component';
 import { ReportePdfComponent } from './reporte-pdf/reporte-pdf.component';
@@ -24,7 +23,14 @@ import {
   NgxAwesomePopupModule,
   ToastNotificationConfigModule,
 } from '@costlydeveloper/ngx-awesome-popup';
+import { NgxMaskModule} from 'ngx-mask'
 
+//* Configuración de máscara personalizada
+// const maskConfigFunction: () => Partial<IConfig> = () => {
+//   return {
+//     validation: false,
+//   };
+// };
 
 @NgModule({
   declarations: [
@@ -74,7 +80,9 @@ import {
         allowHtmlMessage: true,
       }
     }),
-    ToastNotificationConfigModule.forRoot()
-  ]
+    ToastNotificationConfigModule.forRoot(),
+    NgxMaskModule.forRoot()
+  ],
+
 })
 export class MiembroModule { }
