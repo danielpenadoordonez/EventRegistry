@@ -29,13 +29,6 @@ export class MiembroAllComponent implements OnInit {
   dataSource = new MatTableDataSource<any>();
 
   displayedColumns = ['id', 'nombreCompleto', "numeroCedula", "estatus1", "correo", "telefono", "confirmado", "presente", "accion"];
-  // id INT NOT NULL, 
-  // NombreCompleto VARCHAR(250)  NOT NULL, 
-  // NumeroCedula VARCHAR(15) UNIQUE NOT NULL, 
-  // Estatus1 BIT DEFAULT 0 NOT NULL,  -- Activo o Inactivo
-  // Correo VARCHAR(100)  NOT NULL, 
-  // Telefono VARCHAR(50)  NOT NULL
-  // Presente BIT -- N : M
 
   constructor(private router: Router,
     private route: ActivatedRoute, private gService: GenericService, private notificacion: NotificacionService,
@@ -47,6 +40,7 @@ export class MiembroAllComponent implements OnInit {
     this.route.params.subscribe((params) => {
       this.idEvent = params['id'] || ' ';
     });
+    //* Cargar el query params
   }
 
   //* Método encargado de notificar
@@ -80,13 +74,15 @@ export class MiembroAllComponent implements OnInit {
     let valor = await this.isValidEvent();
     this.notification(valor);
 
+
     if (valor) {
       //! Quitar el comentario
       //this.listaMiembros();
       this.loadUser();
-    } else
+    } else {
       this.onBack();
-
+      return;
+    }
   }
 
   listaMiembros(): void {
@@ -221,6 +217,9 @@ export class MiembroAllComponent implements OnInit {
   crearMiembro(): void {
     this.router.navigate(['/member/create'], {
       relativeTo: this.route,
+      queryParams: {
+        id_event: this.idEvent
+      }
     });
   }
 
