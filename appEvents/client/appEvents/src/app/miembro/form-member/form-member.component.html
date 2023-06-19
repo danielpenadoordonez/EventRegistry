@@ -1,7 +1,223 @@
+<form
+  [formGroup]="memberForm"
+  novalidate
+  (ngSubmit)="isCreate ? crearMiembro() : actualizarMiembro()"
+>
+  <input type="hidden" formControlName="id" />
+  <mat-card class="shipping-card">
+    <mat-card-header>
+      <mat-card-title
+        >{{ titleForm | titlecase }} 
+        <i class="bx bx-refresh" style="color: #ffffff" *ngIf="!isCreate"></i>
+        <i class="bx bxs-add-to-queue" *ngIf="isCreate"></i>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width" color="accent">
+            <mat-label>Nombre Completo</mat-label>
+            <input
+              matInput
+              #nombreCompleto
+              minlength="10"
+              maxlength="150"
+              [pattern]="regexNombre"
+              title="Ingrese el nombre completo"
+              placeholder="Nombre del miembro"
+              autocomplete="false"
+              formControlName="nombre_completo"
+              [required]="isCreate"
+              [disabled]="!isCreate"
+            />
+            <mat-hint align="end">
+              {{ nombreCompleto.value.length }} / 150
+            </mat-hint>
+            <mat-error
+              *ngIf="this.errorHandling('nombre_completo', 'required')"
+            >
+              El nombre completo es <strong>requerido</strong>
+            </mat-error>
+            <mat-error *ngIf="this.errorHandling('nombre_completo', 'pattern')">
+              El formato del nombre es <strong>incorrecto</strong>
+            </mat-error>
+            <mat-error
+              *ngIf="this.errorHandling('nombre_completo', 'minlength')"
+            >
+              El nombre es demasiado <strong>corto</strong>
+            </mat-error>
+            <mat-error
+              *ngIf="this.errorHandling('nombre_completo', 'maxlenght')"
+            >
+              El nombre es demasiado<strong>largo</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field class="full-width" color="accent">
+            <mat-label>Número de Cédula</mat-label>
+            <input
+              matInput
+              #numeroCedula
+              minlength="9"
+              maxlength="15"
+              pattern="([1-7]{1})(\d{4})(\d{4})$"
+              mask="0-0000-0000"
+              [specialCharacters]="['-']"
+              placeholder="0-0000-0000"
+              title="Ingrese el número de cédula"
+              formControlName="numero_cedula"
+              autocomplete="false"
+              [required]="isCreate"
+              [disabled]="!isCreate"
+            />
+            <mat-error *ngIf="this.errorHandling('numero_cedula', 'required')">
+              El número de cédula es <strong>requerido</strong>
+            </mat-error>
+            <mat-error *ngIf="this.errorHandling('numero_cedula', 'pattern')">
+              El formato de la cédula <strong>incorrecto</strong>
+            </mat-error>
+            <mat-error *ngIf="this.errorHandling('numero_cedula', 'minlength')">
+              La cédula no es <strong>válida</strong>
+            </mat-error>
+            <mat-error *ngIf="this.errorHandling('numero_cedula', 'maxlenght')">
+              La cédula no es <strong>válida</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width" color="accent">
+            <mat-label>Correo</mat-label>
+            <input
+              matInput
+              #correo
+              minlength="10"
+              maxlength="100"
+              pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+              type="email"
+              placeholder="example@gmail.com"
+              title="Ingrese el correo electrónico"
+              autocomplete="true"
+              formControlName="correo"
+              [required]="isCreate"
+              [disabled]="!isCreate"
+            />
+            <mat-hint align="end"> {{ correo.value.length }} / 100 </mat-hint>
+            <mat-error>
+              <mat-error *ngIf="this.errorHandling('correo', 'required')">
+                El correo electrónico es <strong>requerido</strong>
+              </mat-error>
+              <mat-error *ngIf="this.errorHandling('correo', 'pattern')">
+                El formato del correo es <strong>incorrecto</strong>
+              </mat-error>
+              <mat-error *ngIf="this.errorHandling('correo', 'minlength')">
+                El correo electrónico es <strong>inválido</strong>
+              </mat-error>
+              <mat-error *ngIf="this.errorHandling('correo', 'maxlenght')">
+                El correo electrónico es <strong>inválido</strong>
+              </mat-error>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field class="full-width" color="accent">
+            <mat-label>Teléfono</mat-label>
+            <input
+              matInput
+              #telefono
+              minlength="8"
+              maxlength="50"
+              pattern="[0-9]{4}[0-9]{2}[0-9]{3}$"
+              mask="0000-00-000"
+              [specialCharacters]="['-']"
+              placeholder="0000-00-000"
+              title="Ingrese el teléfono celular"
+              formControlName="telefono"
+              [required]="isCreate"
+              [disabled]="!isCreate"
+            />
+            <mat-hint align="end"></mat-hint>
+            <mat-error *ngIf="this.errorHandling('telefono', 'required')">
+              El número de teléfono es <strong>requerido</strong>
+            </mat-error>
+            <mat-error *ngIf="this.errorHandling('telefono', 'pattern')">
+              El número de teléfono es <strong>inválido</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <mat-label>Estado</mat-label>
+          <mat-radio-group
+            formControlName="estado"
+            required="true"
+            title="Seleccione el estado del miembro"
+          >
+            <mat-radio-button [value]="0">Inactivo</mat-radio-button>
+            <mat-radio-button [value]="1">Activo</mat-radio-button>
+          </mat-radio-group>
+          <mat-error
+            *ngIf="
+              this.memberForm.controls['estado'].touched &&
+              this.memberForm.controls['estado'].hasError('required')
+            "
+          >
+            Publicar es <strong>requerido</strong>
+          </mat-error>
+        </div>
+        <div class="col">
+          <mat-label>Confirmado</mat-label>
+          <div></div>
+          <mat-checkbox
+            class="margin"
+            formControlName="confirmado"
+            title="¿El miembro confirmó su asistencia al evento?"
+            >Estado
+          </mat-checkbox>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <!-- ! triple botón -->
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        (click)="onBack()"
+        title="Regresar a la página anterior"
+        id="btnBack"
+      >
+        Limpiar
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        (click)="onReset()"
+        title="Limpiar los campos ingresados"
+        id="btnReset"
+      >
+        Regresar
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [title]="isCreate ? 'Añadir miembro' : 'Actualizar miembro'"
+        id="btnSave"
+      >
+        {{ isCreate ? "Añadir" : "Actualizar" }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</form>
 
+<!-- * photobug -->
 
-  <!-- * form create member -->
-  <!-- ! photobugs -->
-  <!-- ! eventos expirados -->
-  <!-- ! pestañas del nav -->
-  <!-- ! Seguridad & filtros -->
+<!-- ? cargar API Data -->
+
+<!-- ! Validar intentar añadir un miembro a un evento ya expirado o update a un evento cerrado -->
+<!-- ! Filtros y botones -->
