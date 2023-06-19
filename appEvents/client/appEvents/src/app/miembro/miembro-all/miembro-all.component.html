@@ -1,13 +1,8 @@
 <!-- ! Reset button form para evento -->
 <mat-card class="full-width">
   <mat-card-title>
+    Padrón del evento{{this.eventName? ': ' : '' }} {{ this.eventName | titlecase}}
     <a
-      {{`Padrón
-      del
-      evento
-      ${this.eventName}`
-      |
-      titlecase}}
       mat-fab
       matTooltip="Añadir miembro al padrón"
       aria-label="Añadir miembro al padrón"
@@ -43,7 +38,7 @@
         </ng-container>
 
         <!-- * Columna nombre -->
-        <ng-container matColumnDef="nombre">
+        <ng-container matColumnDef="nombreCompleto">
           <th
             mat-header-cell
             *matHeaderCellDef
@@ -173,7 +168,9 @@
               aria-label="Marcar como presente al miembro"
               title="Marcar como presente al miembro"
               color="primary"
-              (click)="showConfirmationBox(row.id, row.estatus1, row.nombreCompleto)"
+              (click)="
+                showConfirmationBox(row.id, row.estatus1, row.nombreCompleto)
+              "
             >
               <mat-icon class="mat-18">edit</mat-icon>
             </button>
@@ -210,7 +207,7 @@
       Regresar
     </button>
   </mat-card-actions>
-  <!-- ! form create member -->
+  <!-- * form create member -->
   <!-- ! eventos expirados -->
   <!-- ! pestañas del nav -->
   <!-- ! Seguridad & filtros -->

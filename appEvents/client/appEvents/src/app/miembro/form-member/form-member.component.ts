@@ -1,93 +1,201 @@
-import { Component } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
+import { GenericService } from 'src/app/share/generic.service';
+import { NotificacionService, TipoMessage } from 'src/app/share/notification.service';
 
 @Component({
   selector: 'app-form-member',
   templateUrl: './form-member.component.html',
   styleUrls: ['./form-member.component.css']
 })
-export class FormMemberComponent {
-  addressForm = this.fb.group({
-    company: null,
-    firstName: [null, Validators.required],
-    lastName: [null, Validators.required],
-    address: [null, Validators.required],
-    address2: null,
-    city: [null, Validators.required],
-    state: [null, Validators.required],
-    postalCode: [null, Validators.compose([
-      Validators.required, Validators.minLength(5), Validators.maxLength(5)])
-    ],
-    shipping: ['free', Validators.required]
-  });
+export class FormMemberComponent implements OnInit {
+  titleForm: string = 'Añadir Miembro al Padrón'; //* El título que puede variar en función de un posible update/create
+  destroy$: Subject<boolean> = new Subject<boolean>(); //* Destruir la suscripción
+  memberInfo: any; //* Respuesta del API ante un GET
+  respMember: any; //* Respuesta del API a la hora de POST/PUT
+  submitted = false; //* Subido
+  memberForm: FormGroup; //* Formulario
+  regexNombre: RegExp = new RegExp('(^[A-Za-zÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ]{3,17})([ ]{0,1})([A-Za-zÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ]{3,17})([ ]{0,1})([A-Za-zÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ]{3,17})([ ]{0,1})([A-Za-zÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ]{3,17})$');
+  idMember: number = 0; //* En caso de trabajar un update
+  idEvent: number; //* Sirve para redireccionar
+  isCreate: boolean = true; //* Es crear o actualizar?
 
-  hasUnitNumber = false;
-
-  states = [
-    {name: 'Alabama', abbreviation: 'AL'},
-    {name: 'Alaska', abbreviation: 'AK'},
-    {name: 'American Samoa', abbreviation: 'AS'},
-    {name: 'Arizona', abbreviation: 'AZ'},
-    {name: 'Arkansas', abbreviation: 'AR'},
-    {name: 'California', abbreviation: 'CA'},
-    {name: 'Colorado', abbreviation: 'CO'},
-    {name: 'Connecticut', abbreviation: 'CT'},
-    {name: 'Delaware', abbreviation: 'DE'},
-    {name: 'District Of Columbia', abbreviation: 'DC'},
-    {name: 'Federated States Of Micronesia', abbreviation: 'FM'},
-    {name: 'Florida', abbreviation: 'FL'},
-    {name: 'Georgia', abbreviation: 'GA'},
-    {name: 'Guam', abbreviation: 'GU'},
-    {name: 'Hawaii', abbreviation: 'HI'},
-    {name: 'Idaho', abbreviation: 'ID'},
-    {name: 'Illinois', abbreviation: 'IL'},
-    {name: 'Indiana', abbreviation: 'IN'},
-    {name: 'Iowa', abbreviation: 'IA'},
-    {name: 'Kansas', abbreviation: 'KS'},
-    {name: 'Kentucky', abbreviation: 'KY'},
-    {name: 'Louisiana', abbreviation: 'LA'},
-    {name: 'Maine', abbreviation: 'ME'},
-    {name: 'Marshall Islands', abbreviation: 'MH'},
-    {name: 'Maryland', abbreviation: 'MD'},
-    {name: 'Massachusetts', abbreviation: 'MA'},
-    {name: 'Michigan', abbreviation: 'MI'},
-    {name: 'Minnesota', abbreviation: 'MN'},
-    {name: 'Mississippi', abbreviation: 'MS'},
-    {name: 'Missouri', abbreviation: 'MO'},
-    {name: 'Montana', abbreviation: 'MT'},
-    {name: 'Nebraska', abbreviation: 'NE'},
-    {name: 'Nevada', abbreviation: 'NV'},
-    {name: 'New Hampshire', abbreviation: 'NH'},
-    {name: 'New Jersey', abbreviation: 'NJ'},
-    {name: 'New Mexico', abbreviation: 'NM'},
-    {name: 'New York', abbreviation: 'NY'},
-    {name: 'North Carolina', abbreviation: 'NC'},
-    {name: 'North Dakota', abbreviation: 'ND'},
-    {name: 'Northern Mariana Islands', abbreviation: 'MP'},
-    {name: 'Ohio', abbreviation: 'OH'},
-    {name: 'Oklahoma', abbreviation: 'OK'},
-    {name: 'Oregon', abbreviation: 'OR'},
-    {name: 'Palau', abbreviation: 'PW'},
-    {name: 'Pennsylvania', abbreviation: 'PA'},
-    {name: 'Puerto Rico', abbreviation: 'PR'},
-    {name: 'Rhode Island', abbreviation: 'RI'},
-    {name: 'South Carolina', abbreviation: 'SC'},
-    {name: 'South Dakota', abbreviation: 'SD'},
-    {name: 'Tennessee', abbreviation: 'TN'},
-    {name: 'Texas', abbreviation: 'TX'},
-    {name: 'Utah', abbreviation: 'UT'},
-    {name: 'Vermont', abbreviation: 'VT'},
-    {name: 'Virgin Islands', abbreviation: 'VI'},
-    {name: 'Virginia', abbreviation: 'VA'},
-    {name: 'Washington', abbreviation: 'WA'},
-    {name: 'West Virginia', abbreviation: 'WV'},
-    {name: 'Wisconsin', abbreviation: 'WI'},
-    {name: 'Wyoming', abbreviation: 'WY'}
-  ];
-
-  constructor(private fb: FormBuilder) {}
-
-  onSubmit(): void {
-    alert('Thanks!');
+  constructor(private fb: FormBuilder, private gService: GenericService,
+    private router: Router, private activeRouter: ActivatedRoute, private notificacion: NotificacionService) {
+    this.formularioReactive(); //* Inicializamos el formulario
   }
+
+
+  //* Método encargado de cargar y revisar si es update
+  ngOnInit(): void {
+    //* Cargamos el query params
+    this.idEvent = this.activeRouter.snapshot.queryParams['id_event'] || 0;
+
+    if (this.idEvent == 0) {
+      this.onErrorBack();
+      return;
+    }
+
+    //* Cargamos los params
+    this.activeRouter.params.subscribe((params: Params) => {
+      //* Cargamos el param
+      this.idMember = params['id'];
+      if (this.idMember != undefined) {
+        this.isCreate = false;
+        this.titleForm = "Actualizar Miembro del padrón";
+        //* Obtener data del miembro en caso de ser update, a actualizar del API
+        this.gService.get('get-member', `member_id=${this.idMember}`).pipe(takeUntil(this.destroy$))
+          .subscribe((data: any) => {
+            this.memberInfo = data;
+            this.memberForm.setValue({
+              id: this.memberInfo.id,
+              nombre_completo: this.memberInfo.id,
+              numero_cedula: this.memberInfo.numero_cedula,
+              estado: this.memberInfo.estado,
+              correo: this.memberInfo.crreo,
+              telefono: this.memberInfo.telefono,
+              confirmado: this.memberInfo.confirmado,
+            })
+          });
+      }
+    });
+  }
+
+  //* id INT NOT NULL, 
+  //* NombreCompleto VARCHAR(250)  NOT NULL, 
+  //* NumeroCedula VARCHAR(15) UNIQUE NOT NULL, 
+  //* Estatus1 BIT DEFAULT 0 NOT NULL,  -- Activo o Inactivo
+  //* Correo VARCHAR(100)  NOT NULL, 
+  //* Telefono VARCHAR(50)  NOT NULL
+  //* Confirmado BIT 
+
+  formularioReactive(): void {
+    this.memberForm = this.fb.group({
+      //? Hidden
+      id: null,
+      //? Fieldtext
+      nombre_completo: [null, Validators.compose([
+        Validators.required, Validators.minLength(10), Validators.maxLength(150), Validators.pattern(this.regexNombre)])
+      ],
+      //? Fieldtext - Mask
+      numero_cedula: [null, Validators.compose([
+        Validators.required, Validators.minLength(9), Validators.maxLength(15), Validators.pattern(/([1-7]{1})(\d{4})(\d{4})$/)])
+      ],
+      //? Radio button
+      estado: [null, Validators.required],
+      //? Field text
+      correo: [null, Validators.compose([
+        Validators.required, Validators.minLength(10), Validators.maxLength(100), Validators.email,
+        Validators.pattern(/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/)])
+      ],
+      //? Field text - Mask
+      telefono: [null, Validators.compose([
+        Validators.required, Validators.minLength(8), Validators.maxLength(50), Validators.pattern(/[0-9]{4}[0-9]{2}[0-9]{3}$/)])
+      ],
+      //? Checkbox
+      confirmado: [null, Validators.requiredTrue],
+    });
+  }
+
+  //* Para teléfono y cédula
+  //? [specialCharacters]="[ '[' ,']' , '\\' ]"
+  //? preffix / suffix
+  //* {{ | mask: '0000-00-000'}}
+  //* Usar placeholder
+
+
+  //* Método encargado de crear miembros
+  crearMiembro(): void {
+    //* Verificar validación del form
+    if (this.memberForm.invalid) {
+      return;
+    }
+
+    //! Es necesario válidar que no exista alguien ya con esa cédula
+
+    //* Establecer submit verdadero
+    this.submitted = true;
+
+    //* patch de estado     this.videojuegoForm.patchValue({ generos:gFormat});
+    let stateValue: number = this.memberForm.value.estado == true ? 1 : 0;
+
+    //! Confirmado NECESITA cast en el back
+
+    this.memberForm.patchValue({ estado: stateValue });
+
+    console.log(this.memberForm.value);
+    //* Acción API create enviando toda la informacion del formulario
+    this.gService.create('videojuego', this.memberForm.value)
+      .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
+        //* Obtener la respuesta del
+        this.respMember = data;
+        console.log('respuesta del form');
+        console.log(this.respMember);
+        this.notificacion.mensaje(
+          'Form - Miembro',
+          `¡Se ha añadido el miembro ${this.memberForm.value.nombre_completo || ''} al padrón!`,
+          TipoMessage.success
+        );
+        this.onBack(); //* Regresar
+      });
+  }
+
+  //? Por si acaso llega a ser necesario idk
+  actualizarMiembro(): void {
+    //* Ajustamos los validators de los controles
+    //! La cédula no es un campo editable, ni correo
+    this.memberForm.get('nombre_completo').removeValidators(Validators.required);
+    this.memberForm.get('numero_cedula').removeValidators(Validators.required);
+    this.memberForm.get('correo').removeValidators(Validators.required);
+    this.memberForm.get('telefono').removeValidators(Validators.required);
+
+    //* Verificar validación del form
+    if (this.memberForm.invalid) {
+      return;
+    }
+
+    //* Establecer submit verdadero
+    this.submitted = true;
+
+    this.notificacion.mensaje(
+      'Form - Miembro',
+      `Se ha actualizado la información del miembro ${this.memberForm.value.nombre_completo || ''} del padrón`,
+      TipoMessage.info
+    );
+  }
+
+  //* Méotodo encargado del manejo de errores
+  public errorHandling = (control: string, error: string) => {
+    return this.memberForm.controls[control].hasError(error);
+  };
+
+  //* Reiniciamos
+  onReset(): void {
+    this.submitted = false;
+    this.memberForm.reset();
+  }
+
+  onBack(): void {
+    this.router.navigate([`member/all-padron/${this.idEvent}`]);
+  }
+
+  //* Es totalmente necesario el query params del id, por lo que si no se recibe se redirecciona
+  onErrorBack(): void {
+    this.notificacion.mensaje(
+      'Form - miembro',
+      'Ha ocurrido un error, no se específico el evento para añadir al miembro',
+      TipoMessage.error
+    );
+    this.router.navigate(['evento/all']);
+  }
+
+  //* Desinscribirse
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
+  }
+
+
 }

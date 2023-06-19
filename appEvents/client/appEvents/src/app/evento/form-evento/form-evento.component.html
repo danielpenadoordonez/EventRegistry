@@ -36,32 +36,26 @@
               maxlength="100"
               pattern="[\w\[\]`ÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ!@#$%\^&*()={}:;<>+'-/\s/]*"
               placeholder="Nombre"
-              title="Ingrese el nombre"
+              title="Ingrese el nombre del evento"
               formControlName="nombre"
+              placeholder="Digite el nombre del evento"
               autocomplete="false"
+              required
             />
             <mat-hint align="end"
               >{{ nombreEvento.value.length }} / 100</mat-hint
             >
-            <mat-error
-              *ngIf="eventoForm.controls['nombre'].hasError('required')"
-            >
+            <mat-error *ngIf="this.errorHandling('nombre', 'required')">
               El Nombre del evento es <strong>requerido</strong>
             </mat-error>
-            <mat-error
-              *ngIf="eventoForm.controls['nombre'].hasError('pattern')"
-            >
+            <mat-error *ngIf="this.errorHandling('nombre', 'pattern')">
               El Nombre del evento es
               <strong>debe seguir el formato adecuado</strong>
             </mat-error>
-            <mat-error
-              *ngIf="eventoForm.controls['nombre'].hasError('minlength')"
-            >
+            <mat-error *ngIf="this.errorHandling('nombre', 'minlength')">
               El Nombre del evento es <strong>demasiado corto</strong>
             </mat-error>
-            <mat-error
-              *ngIf="eventoForm.controls['nombre'].hasError('maxlenght')"
-            >
+            <mat-error *ngIf="this.errorHandling('nombre', 'maxlenght')">
               El Nombre del evento es <strong>demasiado largo</strong>
             </mat-error>
           </mat-form-field>
@@ -83,28 +77,22 @@
               pattern="[\w\[\]`ÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ!@#$%\^&*()={}:;<>+'-/\s/]*"
               formControlName="descripcion"
               autocomplete="false"
+              placeholder="Descripción del evento"
+              required
             ></textarea>
             <mat-hint align="end"
               >{{ textDescription.value.length }} / 500</mat-hint
             >
-            <mat-error
-              *ngIf="eventoForm.controls['descripcion'].hasError('required')"
-            >
+            <mat-error *ngIf="this.errorHandling('descripcion', 'required')">
               La descripción es <strong> requerida</strong>
             </mat-error>
-            <mat-error
-              *ngIf="eventoForm.controls['descripcion'].hasError('pattern')"
-            >
+            <mat-error *ngIf="this.errorHandling('descripcion', 'pattern')">
               La descripción debe seguir el <strong>formato requerido</strong>
             </mat-error>
-            <mat-error
-              *ngIf="eventoForm.controls['descripcion'].hasError('minlength')"
-            >
+            <mat-error *ngIf="this.errorHandling('descripcion', 'minlength')">
               La descripción es demasiado <strong>corta</strong>
             </mat-error>
-            <mat-error
-              *ngIf="eventoForm.controls['descripcion'].hasError('maxlength')"
-            >
+            <mat-error *ngIf="this.errorHandling('descripcion', 'maxlength')">
               La descripción es demasiado<strong>larga</strong>
             </mat-error>
           </mat-form-field>
@@ -124,6 +112,9 @@
               maxlength="10"
               [matDatepickerFilter]="dateFilter"
               title="Fecha del evento"
+              placeholder="00/00/0000"
+              autocomplete="false"
+              required
             />
             <mat-hint>MM/DD/YYYY</mat-hint>
             <mat-datepicker-toggle
@@ -132,13 +123,13 @@
             ></mat-datepicker-toggle>
             <mat-datepicker #picker color="accent"></mat-datepicker>
           </mat-form-field>
-          <mat-error *ngIf="eventoForm.controls['fecha'].hasError('required')">
+          <mat-error *ngIf="this.errorHandling('fecha', 'required')">
             La fecha del evento es <strong>requerida</strong>
           </mat-error>
-          <mat-error *ngIf="eventoForm.controls['fecha'].hasError('minlength')">
+          <mat-error *ngIf="this.errorHandling('fecha', 'minlength')">
             La fecha del evento es<strong>inválida</strong>
           </mat-error>
-          <mat-error *ngIf="eventoForm.controls['fecha'].hasError('maxlength')">
+          <mat-error *ngIf="this.errorHandling('fecha', 'maxlength')">
             La fecha del evento es<strong>inválida</strong>
           </mat-error>
         </div>
@@ -155,7 +146,11 @@
             [color]="srcFileResult ? 'accent' : 'primary'"
             id="btnFile"
           >
-            Seleccione el archivo <i class='bx bxs-cloud-upload bx-fade-up' style='color:#ffffff' ></i>
+            Seleccione el archivo
+            <i
+              class="bx bxs-cloud-upload bx-fade-up"
+              style="color: #ffffff"
+            ></i>
           </button>
           <input
             hidden
@@ -163,6 +158,7 @@
             #fileInput
             accept=".xlsx"
             type="file"
+            [required]="isCreate"
           />
           <div></div>
           <p *ngIf="srcFileResult">
@@ -184,18 +180,18 @@
         title="Regresar a la página anterior"
         id="btnBack"
       >
-        Regresar
+        Limpiar
       </button>
       <button
-      mat-raised-button
-      color="primary"
-      type="button"
-      (click)="onReset()"
-      title="Limpiar los campos ingresados"
-      id="btnReset"
-    >
-      Regresar
-    </button>
+        mat-raised-button
+        color="primary"
+        type="button"
+        (click)="onReset()"
+        title="Limpiar los campos ingresados"
+        id="btnReset"
+      >
+        Regresar
+      </button>
       <button
         mat-raised-button
         color="primary"
