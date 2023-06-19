@@ -7,7 +7,7 @@
   <mat-card class="shipping-card">
     <mat-card-header>
       <mat-card-title
-        >{{ titleForm | titlecase }} 
+        >{{ titleForm | titlecase }}
         <i class="bx bx-refresh" style="color: #ffffff" *ngIf="!isCreate"></i>
         <i class="bx bxs-add-to-queue" *ngIf="isCreate"></i>
       </mat-card-title>
@@ -66,21 +66,21 @@
               [specialCharacters]="['-']"
               placeholder="0-0000-0000"
               title="Ingrese el número de cédula"
-              formControlName="numero_cedula"
+              formControlName="cedula"
               autocomplete="false"
               [required]="isCreate"
               [disabled]="!isCreate"
             />
-            <mat-error *ngIf="this.errorHandling('numero_cedula', 'required')">
+            <mat-error *ngIf="this.errorHandling('cedula', 'required')">
               El número de cédula es <strong>requerido</strong>
             </mat-error>
-            <mat-error *ngIf="this.errorHandling('numero_cedula', 'pattern')">
+            <mat-error *ngIf="this.errorHandling('cedula', 'pattern')">
               El formato de la cédula <strong>incorrecto</strong>
             </mat-error>
-            <mat-error *ngIf="this.errorHandling('numero_cedula', 'minlength')">
+            <mat-error *ngIf="this.errorHandling('cedula', 'minlength')">
               La cédula no es <strong>válida</strong>
             </mat-error>
-            <mat-error *ngIf="this.errorHandling('numero_cedula', 'maxlenght')">
+            <mat-error *ngIf="this.errorHandling('cedula', 'maxlenght')">
               La cédula no es <strong>válida</strong>
             </mat-error>
           </mat-form-field>
@@ -152,7 +152,7 @@
         <div class="col">
           <mat-label>Estado</mat-label>
           <mat-radio-group
-            formControlName="estado"
+            formControlName="status"
             required="true"
             title="Seleccione el estado del miembro"
           >
@@ -161,8 +161,8 @@
           </mat-radio-group>
           <mat-error
             *ngIf="
-              this.memberForm.controls['estado'].touched &&
-              this.memberForm.controls['estado'].hasError('required')
+              this.memberForm.controls['status'].touched &&
+              this.memberForm.controls['status'].hasError('required')
             "
           >
             Publicar es <strong>requerido</strong>
@@ -175,7 +175,10 @@
             class="margin"
             formControlName="confirmado"
             title="¿El miembro confirmó su asistencia al evento?"
-            >Estado
+            [(ngModel)]="isChecked"
+            >{{ this.isChecked ? "¡Sí! " : "No!" }}
+            <i *ngIf="isChecked" class="bx bx-check bx-tada" style="color: #ffffff"></i>
+            <i *ngIf="!isChecked" class="bx bxs-user-x bx-tada" style="color: #ffffff"></i>
           </mat-checkbox>
         </div>
       </div>
@@ -215,8 +218,7 @@
   </mat-card>
 </form>
 
-<!-- ? cargar API Data -->
-
-<!-- * photobug -->
+<!-- * cargar API Data -->
+<!-- * Photobug -->
 <!-- ! Validar intentar añadir un miembro a un evento ya expirado o update a un evento cerrado -->
 <!-- ! Filtros y botones -->

@@ -76,8 +76,7 @@ export class MiembroAllComponent implements OnInit {
 
 
     if (valor) {
-      //! Quitar el comentario
-      //this.listaMiembros();
+      this.listaMiembros();
       this.loadUser();
     } else {
       this.onBack();
@@ -85,13 +84,14 @@ export class MiembroAllComponent implements OnInit {
     }
   }
 
+  //* Enlistar la lista de miembros de asistentes al evento
   listaMiembros(): void {
     this.gService
-      .get('padron/', `event_id=${this.idEvent}`) //! Cambiar aquí pá
+      .get('members-by-event', `event=${this.idEvent}`)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
         console.log(data);
-        this.datos = data;
+        this.datos = data.members;
         this.dataSource = new MatTableDataSource(this.datos);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
@@ -131,7 +131,7 @@ export class MiembroAllComponent implements OnInit {
   }
 
   //* Método encargado de notificar si quiere o no marcar al miembro seleccionado como presente
-  showConfirmationBox(idMemberSelected: number, status: any, name: string): void {
+  showConfirmationBox(idMemberSelected: number, status: any, name: string, confirmado: any): void {
     if (!this.isConfirmBoxActive) {
       this.isConfirmBoxActive = !this.isConfirmBoxActive; //* Cambiamos el estado
       //* Declaramos las propiedades del confirm box
@@ -155,13 +155,7 @@ export class MiembroAllComponent implements OnInit {
       confirmBox.openConfirmBox$().subscribe(resp => {
         //* ¿Qué hacemos?
         if (resp.success) {
-          this.notificacion.mensaje(
-            'Miembro - Presente',
-            `El miembro ${name.toLowerCase().split(" ")[0]} se ha marcado como presente`,
-            TipoMessage.success
-          );
-          //! QUITAR EL COMENTADO
-          this.setPresente(idMemberSelected, status, name);
+          this.setPresente(idMemberSelected, status, name, confirmado);
         } else {
           this.notificacion.mensaje(
             'Miembro - Info',
@@ -175,23 +169,38 @@ export class MiembroAllComponent implements OnInit {
 
   //* Método encargado de cambiar a presente el usuario y debe registrar quién fue
   //* el usuario que lo colocó como presente
-  setPresente(idMember: number, estado: any, nombre: string): void {
+  setPresente(idMember: number, estado: any, nombre: string, confirmado: any): void { //! CAMBIAR ESE ANY
     //? Si está como Inactivo no se puede marcar como presente
     //? Recuerde el botón de sí o no
     if (estado) {
       let currentDate: Date = new Date();
 
       //* preparamos la data para el update/put
-      const response: any = {
-        id_memeber: idMember,
-        id_event: this.idEvent,
-        id_user: this.currentUser.user.id,
-        date: currentDate
+      const responseCreate: any = {
+        "event_id": Number(this.idEvent),
+        "member_id": idMember,
+        "confirmed": confirmado == true ? 1 : 0,
+        "date_time": currentDate,
+        "was_present": 1,
+        "id_usuario": this.currentUser.user.id
       };
+
+      const responseUpdate: any = {
+        "confirmed": confirmado == true ? 1 : 0,
+        "was_present": 1,
+        "id_usuario": this.currentUser.user.id
+      };
+
+
+
+
+      //! Bug con member_id
+
+      console.log(responseCreate)
 
       //* Actualizar
       this.gService
-        .update('update-member/', response) //! CAMBIAR AQUÍ
+        .create('register-assistance', responseCreate)
         .pipe(takeUntil(this.destroy$))
         .subscribe((data: any) => {
           console.log(data);
