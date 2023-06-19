@@ -14,20 +14,21 @@
           Inicio
         </button>
         <button
+        mat-menu-item
+        [routerLink]="'/acerca-de'"
+        [routerLinkActive]="'mat-raised-button'"
+        title="Acerca de Organize Now"
+      >
+        Acerca de
+      </button>
+        <button
           mat-menu-item
           [routerLink]="'/evento'"
           [routerLinkActive]="'mat-raised-button'"
           title="Página home"
+          *ngIf="currentUser.user.id_profile != 0"
         >
           Eventos
-        </button>
-        <button
-          mat-menu-item
-          [routerLink]="'/acerca-de'"
-          [routerLinkActive]="'mat-raised-button'"
-          title="Acerca de Organize Now"
-        >
-          Acerca de
         </button>
         <button mat-menu-item [matMenuTriggerFor]="menu2" class="example-icon">
           Mantenimiento
@@ -38,16 +39,9 @@
             [routerLink]="'/evento/all'"
             [routerLinkActive]="'mat-raised-button'"
             title="Mantenimiento de eventos"
+            *ngIf="currentUser.user.id_profile != 0"
           >
             Evento
-          </button>
-          <button
-            mat-menu-item
-            [routerLink]="'/evento/reportePDF'"
-            [routerLinkActive]="'mat-raised-button'"
-            title="Generar reportes de eventos"
-          >
-            Reporte PDF
           </button>
         </mat-menu>
       </mat-menu>

@@ -11,12 +11,13 @@ import { NotificacionService, TipoMessage } from 'src/app/share/notification.ser
   styleUrls: ['./form-member.component.css']
 })
 export class FormMemberComponent implements OnInit {
-  titleForm: string = 'Crear'; //* El título que puede variar en función de un posible update/create
+  titleForm: string = 'Añadir Miembro al Padrón'; //* El título que puede variar en función de un posible update/create
   destroy$: Subject<boolean> = new Subject<boolean>(); //* Destruir la suscripción
   memberInfo: any; //* Respuesta del API ante un GET
   respMember: any; //* Respuesta del API a la hora de POST/PUT
   submitted = false; //* Subido
   memberForm: FormGroup; //* Formulario
+  regexNombre: RegExp = new RegExp('(^[A-Za-zÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ]{3,17})([ ]{0,1})([A-Za-zÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ]{3,17})([ ]{0,1})([A-Za-zÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ]{3,17})([ ]{0,1})([A-Za-zÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ]{3,17})$');
   idMember: number = 0; //* En caso de trabajar un update
   idEvent: number; //* Sirve para redireccionar
   isCreate: boolean = true; //* Es crear o actualizar?
@@ -31,12 +32,19 @@ export class FormMemberComponent implements OnInit {
   ngOnInit(): void {
     //* Cargamos el query params
     this.idEvent = this.activeRouter.snapshot.queryParams['id_event'] || 0;
+
+    if (this.idEvent == 0) {
+      this.onErrorBack();
+      return;
+    }
+
+    //* Cargamos los params
     this.activeRouter.params.subscribe((params: Params) => {
       //* Cargamos el param
       this.idMember = params['id'];
       if (this.idMember != undefined) {
         this.isCreate = false;
-        this.titleForm = "Actualizar";
+        this.titleForm = "Actualizar Miembro del padrón";
         //* Obtener data del miembro en caso de ser update, a actualizar del API
         this.gService.get('get-member', `member_id=${this.idMember}`).pipe(takeUntil(this.destroy$))
           .subscribe((data: any) => {
@@ -69,11 +77,11 @@ export class FormMemberComponent implements OnInit {
       id: null,
       //? Fieldtext
       nombre_completo: [null, Validators.compose([
-        Validators.required, Validators.minLength(10), Validators.maxLength(150), Validators.pattern(/(^[A-Za-z]{3,17})([ ]{0,1})([A-Za-z]{3,17})([ ]{0,1})([A-Za-z]{3,17})([ ]{0,1})([A-Za-z]{3,17})$/)])
+        Validators.required, Validators.minLength(10), Validators.maxLength(150), Validators.pattern(this.regexNombre)])
       ],
       //? Fieldtext - Mask
       numero_cedula: [null, Validators.compose([
-        Validators.required, Validators.minLength(11), Validators.maxLength(15), Validators.pattern(/([1-7]{1})[?-](\d{4})[?-](\d{4})$/)])
+        Validators.required, Validators.minLength(9), Validators.maxLength(15), Validators.pattern(/([1-7]{1})(\d{4})(\d{4})$/)])
       ],
       //? Radio button
       estado: [null, Validators.required],
@@ -84,7 +92,7 @@ export class FormMemberComponent implements OnInit {
       ],
       //? Field text - Mask
       telefono: [null, Validators.compose([
-        Validators.required, Validators.minLength(9), Validators.maxLength(50), Validators.pattern(/[0-9]{4}-[0-9]{2}-[0-9]{3}$/)])
+        Validators.required, Validators.minLength(8), Validators.maxLength(50), Validators.pattern(/[0-9]{4}[0-9]{2}[0-9]{3}$/)])
       ],
       //? Checkbox
       confirmado: [null, Validators.requiredTrue],
@@ -97,11 +105,6 @@ export class FormMemberComponent implements OnInit {
   //* {{ | mask: '0000-00-000'}}
   //* Usar placeholder
 
-  //* Méotodo encargado del manejo de errores
-  public errorHandling = (control: string, error: string) => {
-    return this.memberForm.controls[control].hasError(error);
-  };
-
 
   //* Método encargado de crear miembros
   crearMiembro(): void {
@@ -110,8 +113,17 @@ export class FormMemberComponent implements OnInit {
       return;
     }
 
+    //! Es necesario válidar que no exista alguien ya con esa cédula
+
     //* Establecer submit verdadero
     this.submitted = true;
+
+    //* patch de estado     this.videojuegoForm.patchValue({ generos:gFormat});
+    let stateValue: number = this.memberForm.value.estado == true ? 1 : 0;
+
+    //! Confirmado NECESITA cast en el back
+
+    this.memberForm.patchValue({ estado: stateValue });
 
     console.log(this.memberForm.value);
     //* Acción API create enviando toda la informacion del formulario
@@ -119,7 +131,8 @@ export class FormMemberComponent implements OnInit {
       .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
         //* Obtener la respuesta del
         this.respMember = data;
-        //! Notificar aquí y en update
+        console.log('respuesta del form');
+        console.log(this.respMember);
         this.notificacion.mensaje(
           'Form - Miembro',
           `¡Se ha añadido el miembro ${this.memberForm.value.nombre_completo || ''} al padrón!`,
@@ -131,6 +144,13 @@ export class FormMemberComponent implements OnInit {
 
   //? Por si acaso llega a ser necesario idk
   actualizarMiembro(): void {
+    //* Ajustamos los validators de los controles
+    //! La cédula no es un campo editable, ni correo
+    this.memberForm.get('nombre_completo').removeValidators(Validators.required);
+    this.memberForm.get('numero_cedula').removeValidators(Validators.required);
+    this.memberForm.get('correo').removeValidators(Validators.required);
+    this.memberForm.get('telefono').removeValidators(Validators.required);
+
     //* Verificar validación del form
     if (this.memberForm.invalid) {
       return;
@@ -146,6 +166,11 @@ export class FormMemberComponent implements OnInit {
     );
   }
 
+  //* Méotodo encargado del manejo de errores
+  public errorHandling = (control: string, error: string) => {
+    return this.memberForm.controls[control].hasError(error);
+  };
+
   //* Reiniciamos
   onReset(): void {
     this.submitted = false;
@@ -154,6 +179,16 @@ export class FormMemberComponent implements OnInit {
 
   onBack(): void {
     this.router.navigate([`member/all-padron/${this.idEvent}`]);
+  }
+
+  //* Es totalmente necesario el query params del id, por lo que si no se recibe se redirecciona
+  onErrorBack(): void {
+    this.notificacion.mensaje(
+      'Form - miembro',
+      'Ha ocurrido un error, no se específico el evento para añadir al miembro',
+      TipoMessage.error
+    );
+    this.router.navigate(['evento/all']);
   }
 
   //* Desinscribirse
