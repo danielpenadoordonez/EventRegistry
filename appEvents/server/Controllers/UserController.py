@@ -10,7 +10,6 @@ class UserController():
 
         if len(query_result) > 0:
             user = User()
-            user.id = query_result[0][0]
             user.id_perfil = query_result[0][1]
             user.username = query_result[0][2]
             user.password = query_result[0][3]
@@ -26,3 +25,13 @@ class UserController():
     def is_password_correct(username, password) -> bool:
         user = UserController.get_user(username)
         return user.password == password
+    
+    @staticmethod
+    def create_user(user:User):
+        insert_query = f"""
+        INSERT INTO Usuario VALUES ({user.id_perfil}, '{user.username}', '{user.password}')
+        """
+        try:
+            DBConnection.run_statement(insert_query)
+        except:
+            raise

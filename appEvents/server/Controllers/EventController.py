@@ -55,7 +55,9 @@ class EventController():
         update_query = f"""UPDATE Evento
                            SET Nombre = '{event.nombre}',
                                Descripcion = '{event.descripcion}',
-                               Fecha = '{event.fecha}'
+                               Id_Usuario = {event.id_Usuario},
+                               Fecha = '{event.fecha}',
+                               Abierto = {event.abierto}
                             WHERE Id = {event.id}"""
         try:
             DBConnection.run_statement(update_query)
