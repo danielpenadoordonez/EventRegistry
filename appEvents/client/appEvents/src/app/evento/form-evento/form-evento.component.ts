@@ -126,7 +126,7 @@ export class FormEventoComponent implements OnInit {
     //* Verificar validación del formulario
     if (this.eventoForm.invalid) {
       this.notificacion.mensaje(
-        `Aviso - Evento - ${this.isCreate ? 'Crear' : 'Actualizar'}`,
+        'Aviso - Evento - Crear',
         'Ha ocurrido un error a la hora de crear el evento, por favor verifique todos los campos',
         TipoMessage.warning
       );
@@ -171,10 +171,18 @@ export class FormEventoComponent implements OnInit {
   //* En caso de actualizar un evento
   //? SE HACE DISABLED DEL PADRÓN
   actualizarEvento(): void {
+    //! Si yo no toco la fecha o sea es igual no hay problema, pero si cambia debe acoplarse a las nuevas rules
+    //* Si son iguales
+    if (this.eventInfo.fecha == this.eventoForm.value.fecha) {
+      this.eventoForm.get('fecha').removeValidators(Validators.required);
+      //* Igual pensar en max length o algo así
+      //* Si no un disabled o algo así
+    }
+
     //* Verificar validación del formulario
     if (this.eventoForm.invalid) {
       this.notificacion.mensaje(
-        `Aviso - Evento - ${this.isCreate ? 'Crear' : 'Actualizar'}`,
+        'Aviso - Evento - Actualizar',
         'Ha ocurrido un error a la hora de crear el evento, por favor verifique todos los campos',
         TipoMessage.warning
       );
@@ -276,7 +284,7 @@ export class FormEventoComponent implements OnInit {
 
   //* Manejo de errores
   //* Público puesto que se usa en todo lado
-  public errorHandling = (control: string, error: string) => {
+  public errorHandling = (control: string, error: string) : any => {
     return this.eventoForm.controls[control].hasError(error);
   };
 

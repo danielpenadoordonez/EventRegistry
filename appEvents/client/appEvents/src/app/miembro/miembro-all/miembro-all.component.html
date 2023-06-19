@@ -48,7 +48,7 @@
             Nombre
           </th>
           <td mat-cell *matCellDef="let row" title="Nombre Completo">
-            {{ row.nombreCompleto }}
+            {{ row.nombre_completo }}
           </td>
         </ng-container>
 
@@ -67,7 +67,7 @@
             *matCellDef="let row"
             title="Número de cédula del miembro"
           >
-            {{ row.numeroCedula }}
+            {{ row.cedula }}
           </td>
         </ng-container>
 
@@ -82,7 +82,7 @@
             Estado
           </th>
           <td mat-cell *matCellDef="let row" title="Estado del miembro">
-            {{ row.estatus == 1 ? "Activo/a" : "Inactivo/a" }}
+            {{ row.status == true ? "Activo/a" : "Inactivo/a" }}
           </td>
         </ng-container>
 
@@ -169,10 +169,10 @@
               title="Marcar como presente al miembro"
               color="primary"
               (click)="
-                showConfirmationBox(row.id, row.estatus1, row.nombreCompleto)
+                showConfirmationBox(row.id, row.status, row.nombre_completo, row.confirmado)
               "
             >
-              <mat-icon class="mat-18">edit</mat-icon>
+              <mat-icon class="mat-18">check_circle_outline</mat-icon>
             </button>
           </td>
         </ng-container>

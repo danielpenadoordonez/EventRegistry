@@ -16,6 +16,7 @@ export class FormMemberComponent implements OnInit {
   memberInfo: any; //* Respuesta del API ante un GET
   respMember: any; //* Respuesta del API a la hora de POST/PUT
   submitted = false; //* Subido
+  isChecked: boolean = false; //* Sirve para controlar el estado del checkbox, inicia el false obvio
   memberForm: FormGroup; //* Formulario
   regexNombre: RegExp = new RegExp('(^[A-Za-zÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ]{3,17})([ ]{0,1})([A-Za-zÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ]{3,17})([ ]{0,1})([A-Za-zÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ]{3,17})([ ]{0,1})([A-Za-zÑñáÁéÉíÍóÓúÚäÄëËïÏöÖüÜ]{3,17})$');
   idMember: number = 0; //* En caso de trabajar un update
@@ -52,8 +53,8 @@ export class FormMemberComponent implements OnInit {
             this.memberForm.setValue({
               id: this.memberInfo.id,
               nombre_completo: this.memberInfo.id,
-              numero_cedula: this.memberInfo.numero_cedula,
-              estado: this.memberInfo.estado,
+              cedula: this.memberInfo.cedula,
+              status: this.memberInfo.status,
               correo: this.memberInfo.crreo,
               telefono: this.memberInfo.telefono,
               confirmado: this.memberInfo.confirmado,
@@ -80,11 +81,11 @@ export class FormMemberComponent implements OnInit {
         Validators.required, Validators.minLength(10), Validators.maxLength(150), Validators.pattern(this.regexNombre)])
       ],
       //? Fieldtext - Mask
-      numero_cedula: [null, Validators.compose([
+      cedula: [null, Validators.compose([
         Validators.required, Validators.minLength(9), Validators.maxLength(15), Validators.pattern(/([1-7]{1})(\d{4})(\d{4})$/)])
       ],
       //? Radio button
-      estado: [null, Validators.required],
+      status: [null, Validators.required],
       //? Field text
       correo: [null, Validators.compose([
         Validators.required, Validators.minLength(10), Validators.maxLength(100), Validators.email,
@@ -119,15 +120,15 @@ export class FormMemberComponent implements OnInit {
     this.submitted = true;
 
     //* patch de estado     this.videojuegoForm.patchValue({ generos:gFormat});
-    let stateValue: number = this.memberForm.value.estado == true ? 1 : 0;
+    let stateValue: number = this.memberForm.value.status == true ? 1 : 0;
 
-    //! Confirmado NECESITA cast en el back
+    //? Es necesario inster a confirmado en la N:M Confirmado NECESITA cast en el back
 
-    this.memberForm.patchValue({ estado: stateValue });
+    this.memberForm.patchValue({ status: stateValue });
 
     console.log(this.memberForm.value);
     //* Acción API create enviando toda la informacion del formulario
-    this.gService.create('videojuego', this.memberForm.value)
+    this.gService.create('save-member', this.memberForm.value)
       .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
         //* Obtener la respuesta del
         this.respMember = data;
@@ -147,7 +148,7 @@ export class FormMemberComponent implements OnInit {
     //* Ajustamos los validators de los controles
     //! La cédula no es un campo editable, ni correo
     this.memberForm.get('nombre_completo').removeValidators(Validators.required);
-    this.memberForm.get('numero_cedula').removeValidators(Validators.required);
+    this.memberForm.get('cedula').removeValidators(Validators.required);
     this.memberForm.get('correo').removeValidators(Validators.required);
     this.memberForm.get('telefono').removeValidators(Validators.required);
 
@@ -167,7 +168,7 @@ export class FormMemberComponent implements OnInit {
   }
 
   //* Méotodo encargado del manejo de errores
-  public errorHandling = (control: string, error: string) => {
+  public errorHandling = (control: string, error: string): any => {
     return this.memberForm.controls[control].hasError(error);
   };
 
