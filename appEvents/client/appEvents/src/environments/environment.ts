@@ -8,6 +8,7 @@ export const environment = {
 };
 
 //* Python (FLASK): http://127.0.0.1:8080/
+//* Python flask http://192.168.0.27:8080
 //* Prisma: http://localhost:3000/
 
 /*
