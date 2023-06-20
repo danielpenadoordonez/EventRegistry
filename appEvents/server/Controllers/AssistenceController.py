@@ -24,7 +24,8 @@ class AssistenceController():
         UPDATE AsistenciaEvento
         SET Confirmado = {assistence.confirmed},
             Presente = {assistence.was_present},
-            Id_Usuario = {assistence.id_usuario}
+            Id_Usuario = {assistence.id_usuario},
+            Fecha_Hora = {assistence.date_time}
         WHERE Id_Evento = {assistence.event_id} AND Id_Miembro = {assistence.member_id}
         """
         try:
