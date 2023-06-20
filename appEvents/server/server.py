@@ -172,6 +172,7 @@ def update_assistance():
     assistance.confirmed = assistance_data.get('confirmed')
     assistance.was_present = assistance_data.get('was_present')
     assistance.id_usuario = assistance_data.get('id_usuario')
+    assistance.date_time = assistance_data.get('date_time')
 
     AssistenceController.update_assistance(assistance)
     return jsonify({200: "Success"})
