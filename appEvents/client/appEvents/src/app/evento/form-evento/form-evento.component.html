@@ -152,14 +152,19 @@
               style="color: #ffffff"
             ></i>
           </button>
+          
           <input
             hidden
             (change)="onFileChange($event)"
+            maxlength="5242880"
             #fileInput
             accept=".xlsx"
             type="file"
             [required]="isCreate"
           />
+          <mat-hint align="end" title="El tamaño máximo admitido es de 5 megabytes"
+          >{{ fileInput.value.length / (8 * 1024 * 1024)}} / 5mb</mat-hint
+        >
           <div></div>
           <p *ngIf="srcFileResult">
             ¡Padrón cargado éxitosamente!

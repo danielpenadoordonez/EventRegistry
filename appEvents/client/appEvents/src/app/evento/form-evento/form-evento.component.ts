@@ -7,6 +7,12 @@ import { AuthenticationService } from 'src/app/share/authentication.service';
 import { GenericService } from 'src/app/share/generic.service';
 import { NotificacionService, TipoMessage } from 'src/app/share/notification.service';
 import * as XLSX from 'xlsx';
+export enum ErrorType {
+  Required,
+  MaxLenght,
+  MultiFile,
+  Accept //* Format
+}
 
 @Component({
   selector: 'app-form-evento',
@@ -229,13 +235,22 @@ export class FormEventoComponent implements OnInit {
       return;
     }
 
+    if (target.files[0].size > 5242880) { //* Obtenemos el primero para comprobar
+      this.notificacion.mensaje(
+        'Evento - Padrón',
+        '¡El tamaño máximo del archivo es de 5 megabytes!!',
+        TipoMessage.error
+      );
+      this.srcFileResult = undefined;
+      return;
+    }
+
     if (typeof (FileReader) === 'undefined' || !file) {
       this.notificacion.mensaje(
         'Evento - Padrón',
         'Por favor, ingrese un documento válido',
         TipoMessage.error
       );
-      //* Cambiamos
       this.srcFileResult = undefined;
       return;
     }
@@ -284,7 +299,7 @@ export class FormEventoComponent implements OnInit {
 
   //* Manejo de errores
   //* Público puesto que se usa en todo lado
-  public errorHandling = (control: string, error: string) : any => {
+  public errorHandling = (control: string, error: string): any => {
     return this.eventoForm.controls[control].hasError(error);
   };
 
@@ -293,6 +308,27 @@ export class FormEventoComponent implements OnInit {
     //* Espera a cambios de forma responsiva
     this._ngZone.onStable.pipe(take(1)).subscribe(() => this.autosize.resizeToFitContent(true));
   }
+
+  //* Método encargado de manejar los errores del input file
+  //* Recibe el valor del evento y un error value
+  errorFileHandling = (event: any, errorHandling: ErrorType): boolean => {
+    let validadora: boolean = false; //* Variable encargada de validar en función, por default false
+    console.log(event.value); //? Visualizamos el resultado
+    console.log(ErrorType[errorHandling]) //? Visualizamos el resultado
+    switch (errorHandling) {
+      case ErrorType.Required:
+        validadora = !validadora;
+        break;
+      case ErrorType.MaxLenght:
+        break;
+      case ErrorType.MultiFile:
+        break;
+      case ErrorType.Accept:
+        break;
+    }
+    return validadora;
+  };
+
 
   //* Filtro para datepicker
   dateFilter = (d: Date | null): boolean => {

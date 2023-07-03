@@ -26,11 +26,11 @@
           [routerLink]="'/evento'"
           [routerLinkActive]="'mat-raised-button'"
           title="Página home"
-          *ngIf="currentUser.user.id_profile != 0"
+          *ngIf="currentUser != undefined ? currentUser.user.id_profile != 0 : false"
         >
           Eventos
         </button>
-        <button mat-menu-item [matMenuTriggerFor]="menu2" class="example-icon">
+        <button mat-menu-item [matMenuTriggerFor]="menu2" class="example-icon"   *ngIf="currentUser != undefined ? currentUser.user.id_profile != 0 : false">
           Mantenimiento
         </button>
         <mat-menu #menu2="matMenu">
@@ -39,7 +39,6 @@
             [routerLink]="'/evento/all'"
             [routerLinkActive]="'mat-raised-button'"
             title="Mantenimiento de eventos"
-            *ngIf="currentUser.user.id_profile != 0"
           >
             Evento
           </button>
