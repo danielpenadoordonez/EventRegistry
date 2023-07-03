@@ -224,34 +224,27 @@ export class FormEventoComponent implements OnInit {
     const file = inputNode.files[0];
 
     //* Validaciones necesarias
-    if (target.files.length !== 1) {
-      this.notificacion.mensaje(
-        'Evento - Padrón',
-        'No se pueden ingresar más de 1 archivo',
-        TipoMessage.error
-      );
-      //* Cambiamos
-      this.srcFileResult = undefined;
-      return;
-    }
-
-    if (target.files[0].size > 5242880) { //* Obtenemos el primero para comprobar
-      this.notificacion.mensaje(
-        'Evento - Padrón',
-        '¡El tamaño máximo del archivo es de 5 megabytes!!',
-        TipoMessage.error
-      );
-      this.srcFileResult = undefined;
-      return;
-    }
-
     if (typeof (FileReader) === 'undefined' || !file) {
-      this.notificacion.mensaje(
-        'Evento - Padrón',
-        'Por favor, ingrese un documento válido',
-        TipoMessage.error
-      );
-      this.srcFileResult = undefined;
+      this.errorFileHandling(TipoMessage.error, ErrorType.Required);
+      //* Cambiamos
+      return;
+    }
+
+    if (target.files.length !== 1) {
+      this.errorFileHandling(TipoMessage.error, ErrorType.MultiFile);
+      return;
+    }
+
+    if (target.files[0].size > 655360) { //* Obtenemos el primero para comprobar, en el front se trabaja en bits, aquí en bytes así que / 8
+      this.errorFileHandling(TipoMessage.error, ErrorType.MaxLenght);
+      return;
+    }
+
+    if (target.files[0].type != 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      //* Accept se refiere a los formatos aceptados
+      //! VERIFICAMOS
+      console.log()
+      this.errorFileHandling(TipoMessage.error, ErrorType.Accept);
       return;
     }
 
@@ -311,22 +304,36 @@ export class FormEventoComponent implements OnInit {
 
   //* Método encargado de manejar los errores del input file
   //* Recibe el valor del evento y un error value
-  errorFileHandling = (event: any, errorHandling: ErrorType): boolean => {
-    let validadora: boolean = false; //* Variable encargada de validar en función, por default false
-    console.log(event.value); //? Visualizamos el resultado
+  errorFileHandling = (messageType: TipoMessage, errorHandling: ErrorType): void => {
+    //* Proceso necesario
+    let message: string = ''; //* Dependiendo del tipo de mensaje y el errotype
+    let messageTitle: string = 'Evento - Padrón'; //* Encargado de manejar el título del mensaje
+    //! las propiedades en el front (variables)
     console.log(ErrorType[errorHandling]) //? Visualizamos el resultado
     switch (errorHandling) {
       case ErrorType.Required:
-        validadora = !validadora;
+        message = 'Por favor, ingrese un documento válido';
         break;
       case ErrorType.MaxLenght:
+        message = '¡El tamaño máximo del archivo es de 5 megabytes!!';
         break;
       case ErrorType.MultiFile:
+        message = 'No se pueden ingresar más de 1 archivo';
         break;
       case ErrorType.Accept:
+        message = 'Por favor, ingrese un archivo de tipo Excel en formato .xlsx';
         break;
+      default:
+        message = 'Unknow error'
     }
-    return validadora;
+    //* Notificamos
+    this.notificacion.mensaje(
+      messageTitle,
+      message,
+      messageType
+    );
+    //* Ajustamos a undefined pá
+    this.srcFileResult = undefined;
   };
 
 
