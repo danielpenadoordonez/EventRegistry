@@ -170,8 +170,17 @@
             ¡Padrón cargado éxitosamente!
             <i class="bx bxs-cloud-upload bx-tada" style="color: #000000"></i>
           </p>
-          <mat-error *ngIf="!srcFileResult">
+          <mat-error *ngIf="stringFileInputError.indexOf('Required') != -1">
             El padrón de evento es <strong>requerido</strong>
+          </mat-error>
+          <mat-error *ngIf="stringFileInputError.indexOf('MaxLength') != -1">
+            El padrón del evento <strong>supera</strong> los 5 megabytes!!
+          </mat-error>
+          <mat-error *ngIf="stringFileInputError.indexOf('MultiFIle') != -1">
+            Solo se puede ingresar <strong>un único </strong> archivo excel
+          </mat-error>
+          <mat-error *ngIf="stringFileInputError.indexOf('Accept') != -1">
+            El archivo ingresado no contiene el <strong>formato adecuado</strong>
           </mat-error>
         </div>
       </div>
