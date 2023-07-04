@@ -240,8 +240,6 @@ export class FormEventoComponent implements OnInit {
 
     if (target.files[0].type != 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
       //* Accept se refiere a los formatos aceptados
-      //! VERIFICAMOS
-      console.log(target.files[0].type)
       this.errorFileHandling(TipoMessage.error, ErrorType.Accept);
       return;
     }
@@ -319,8 +317,6 @@ export class FormEventoComponent implements OnInit {
     //* Proceso necesario
     let message: string = ''; //* Dependiendo del tipo de mensaje y el errotype
     let messageTitle: string = 'Evento - Padrón'; //* Encargado de manejar el título del mensaje
-    //! las propiedades en el front (variables) FALTA ESTO PARA LOS NGIF
-    console.log(ErrorType[errorHandling]) //? Visualizamos el resultado
     switch (errorHandling) {
       case ErrorType.Required:
         message = 'Por favor, ingrese un documento válido';

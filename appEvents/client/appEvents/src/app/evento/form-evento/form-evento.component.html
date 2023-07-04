@@ -162,10 +162,10 @@
             type="file"
             [required]="isCreate"
           />
-          <mat-hint align="end" title="El tamaño máximo admitido es de 5 megabytes"
-          >{{ fileInput.value.length / (8 * 1024 * 1024)}} / 5mb</mat-hint
-        >
           <div></div>
+          <mat-hint align="end" title="El tamaño máximo admitido es de 5 megabytes"
+          >{{ fileInput.value.length / 124 | number: '1.1-1' }}mb / 5mb</mat-hint
+        >
           <p *ngIf="srcFileResult">
             ¡Padrón cargado éxitosamente!
             <i class="bx bxs-cloud-upload bx-tada" style="color: #000000"></i>
