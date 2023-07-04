@@ -7,6 +7,12 @@ import { AuthenticationService } from 'src/app/share/authentication.service';
 import { GenericService } from 'src/app/share/generic.service';
 import { NotificacionService, TipoMessage } from 'src/app/share/notification.service';
 import * as XLSX from 'xlsx';
+export enum ErrorType {
+  Required,
+  MaxLength,
+  MultiFile,
+  Accept //* Format
+}
 
 @Component({
   selector: 'app-form-evento',
@@ -37,8 +43,11 @@ export class FormEventoComponent implements OnInit {
   idEvent: number = 0; //* Respuesta del query params en caso de ser update
   isCreate: boolean = true; //* Is create or update?
   srcFileResult: any; //* Guardar información del Excel
+
+  //* Propiedades para trabajar en el front
   minDate: Date; //* Fecha mínima
   maxDate: Date; //* Fecha máxima
+  stringFileInputError : string = ''; //* Propiedad encargada de manejar errores en el front
 
   //? Encargado de controlar el text area
   @ViewChild('autosize') autosize: CdkTextareaAutosize;
@@ -218,27 +227,34 @@ export class FormEventoComponent implements OnInit {
     const file = inputNode.files[0];
 
     //* Validaciones necesarias
-    if (target.files.length !== 1) {
-      this.notificacion.mensaje(
-        'Evento - Padrón',
-        'No se pueden ingresar más de 1 archivo',
-        TipoMessage.error
-      );
-      //* Cambiamos
-      this.srcFileResult = undefined;
+    if (typeof (FileReader) === 'undefined' || !file) {
+      this.errorFileHandling(TipoMessage.error, ErrorType.Required);
+      //* Retornamos
       return;
     }
 
-    if (typeof (FileReader) === 'undefined' || !file) {
-      this.notificacion.mensaje(
-        'Evento - Padrón',
-        'Por favor, ingrese un documento válido',
-        TipoMessage.error
-      );
-      //* Cambiamos
-      this.srcFileResult = undefined;
+    if (target.files.length !== 1) {
+      this.errorFileHandling(TipoMessage.error, ErrorType.MultiFile);
       return;
     }
+
+    if (target.files[0].type != 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      //* Accept se refiere a los formatos aceptados
+      //! VERIFICAMOS
+      console.log(target.files[0].type)
+      this.errorFileHandling(TipoMessage.error, ErrorType.Accept);
+      return;
+    }
+
+    if (target.files[0].size > 655360) { //* Obtenemos el primero para comprobar, en el front se trabaja en bits, aquí en bytes así que / 8
+      this.errorFileHandling(TipoMessage.error, ErrorType.MaxLength);
+      return;
+    }
+
+    //* En caso de pasar las validaciones
+
+    //* Limpiar propiedades de bugs
+    this.stringFileInputError = '';
 
     //* Notificaciones
     this.notificacion.mensaje(
@@ -246,7 +262,6 @@ export class FormEventoComponent implements OnInit {
       `Se ha ${this.srcFileResult !== undefined ? 'actualizado' : 'subido'} el padrón`,
       this.srcFileResult !== undefined ? TipoMessage.info : TipoMessage.success
     );
-
 
     const reader: FileReader = new FileReader();
     reader.readAsBinaryString(target.files[0]);
@@ -274,6 +289,10 @@ export class FormEventoComponent implements OnInit {
     const rspdata = { //* Enviar data
       data: [this.respEvento]
     };
+    // !
+    console.log('Esto es lo que se enviaría al API');
+    console.log(rspdata);
+    // !
     this.gService.create('update-padron', rspdata)
       .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
         //* Obtener respuesta
@@ -284,7 +303,7 @@ export class FormEventoComponent implements OnInit {
 
   //* Manejo de errores
   //* Público puesto que se usa en todo lado
-  public errorHandling = (control: string, error: string) : any => {
+  public errorHandling = (control: string, error: string): any => {
     return this.eventoForm.controls[control].hasError(error);
   };
 
@@ -293,6 +312,46 @@ export class FormEventoComponent implements OnInit {
     //* Espera a cambios de forma responsiva
     this._ngZone.onStable.pipe(take(1)).subscribe(() => this.autosize.resizeToFitContent(true));
   }
+
+  //* Método encargado de manejar los errores del input file
+  //* Recibe el valor del evento y un error value
+  errorFileHandling = (messageType: TipoMessage, errorHandling: ErrorType): void => {
+    //* Proceso necesario
+    let message: string = ''; //* Dependiendo del tipo de mensaje y el errotype
+    let messageTitle: string = 'Evento - Padrón'; //* Encargado de manejar el título del mensaje
+    //! las propiedades en el front (variables) FALTA ESTO PARA LOS NGIF
+    console.log(ErrorType[errorHandling]) //? Visualizamos el resultado
+    switch (errorHandling) {
+      case ErrorType.Required:
+        message = 'Por favor, ingrese un documento válido';
+        this.srcFileResult = 'Required';
+        break;
+      case ErrorType.MaxLength:
+        message = '¡El tamaño máximo del archivo es de 5 megabytes!!';
+        this.srcFileResult = 'MaxLength';
+        break;
+      case ErrorType.MultiFile:
+        message = 'No se pueden ingresar más de 1 archivo';
+        this.srcFileResult = 'MultiFile';
+        break;
+      case ErrorType.Accept:
+        message = 'Por favor, ingrese un archivo de tipo Excel en formato .xlsx';
+        this.srcFileResult = 'Accept';
+        break;
+      default:
+        message = 'Unknow error'
+        this.srcFileResult = 'Unknow';
+    }
+    //* Notificamos
+    this.notificacion.mensaje(
+      messageTitle,
+      message,
+      messageType
+    );
+    //* Ajustamos a undefined pá
+    this.srcFileResult = undefined;
+  };
+
 
   //* Filtro para datepicker
   dateFilter = (d: Date | null): boolean => {
