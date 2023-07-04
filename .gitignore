@@ -1,1 +1,5 @@
+# Los env ignorados con sus variables de entorno
 appEvents/server/.env
+# Pycaché ignorada igualmente, es propia de cada ordenador
+__pycache__/
+```
