@@ -295,8 +295,11 @@ export class FormEventoComponent implements OnInit {
         this.respExcel = rspdata;
         console.log(`Respuesta API EXCEL: \n ${data}`)
         //* Llamamos al método para registrar la relación N:M
-        this.uploadMemberAssitance(this.respExcel.data);
+        //! DESCOMENTAR
+        //? this.uploadMemberAssitance(this.respExcel.data);
       });
+      //! BORRAR
+      this.uploadMemberAssitance(this.respExcel.data);
   }
 
   //* Método encargado de enviar el array especial para la tabla N:M de asistencia de miembros
@@ -306,6 +309,7 @@ export class FormEventoComponent implements OnInit {
     let index: number = 0; //* Encargado de contar
     for (let register of data) {
       //! EL ID DEL EVENTO NO LO TENEMOS PÁ...
+      //? EN TODO CASO UNA SOLUCIÓN PODRÍA SER USAR EL STORE PROCEDURE
       rspAssitance[index] = {'Id_Evento' : 1, 'Id_Member' : data[index].Id_member, 'Fecha_Hora' : Date.now(), 'Id_Usuario' : this.currentUser.user.id};
       //* El resto de campos van a estar por default
       index++; //* Contamos
