@@ -8,7 +8,7 @@ class MiembroController():
         select_query = f"""
         SELECT a.Id_Miembro, m.NombreCompleto, m.NumeroCedula, m.Estatus1, m.Correo, m.Telefono, a.confirmado
         FROM AsistenciaEvento a, Miembro m
-        WHERE a.Id_Evento = {event_id}
+        WHERE a.Id_Evento = {event_id} AND a.Id_Miembro = m.id
         """
         members = list()
         try:
@@ -37,3 +37,5 @@ class MiembroController():
             DBConnection.run_statement(insert_query)
         except:
             raise
+        
+        #AQUÍ Mario, dejo una función para obtener el last id (SELECT dbo.fnLastIdEvent();)
