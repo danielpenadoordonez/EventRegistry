@@ -74,7 +74,6 @@ export class MiembroAllComponent implements OnInit {
     let valor = await this.isValidEvent();
     this.notification(valor);
 
-
     if (valor) {
       this.listaMiembros();
       this.loadUser();
@@ -191,9 +190,6 @@ export class MiembroAllComponent implements OnInit {
         "id_usuario": this.currentUser.user.id
       };
 
-
-
-
       //! Bug con member_id
 
       console.log(responseCreate)
@@ -220,6 +216,13 @@ export class MiembroAllComponent implements OnInit {
         TipoMessage.error
       );
     }
+  }
+
+  //* Método encargado de darle formato a los números de teléfono
+  formatPhone = (phone: string): string => {
+    let stringPhone: string = phone;
+    stringPhone = stringPhone.replace(/(\d{4})(\d{2})(\d{3})/, '$1-$2-$3');
+    return stringPhone;
   }
 
   //* Método encargado de redirigir para crear un miembro

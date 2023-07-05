@@ -10,6 +10,7 @@ class UserController():
 
         if len(query_result) > 0:
             user = User()
+            user.id = query_result[0][0]
             user.id_perfil = query_result[0][1]
             user.username = query_result[0][2]
             user.password = query_result[0][3]

@@ -116,7 +116,7 @@
             Teléfono
           </th>
           <td mat-cell *matCellDef="let row" title="Teléfono del miembro">
-            {{ row.telefono }}
+            {{ formatPhone(row.telefono) }}
           </td>
         </ng-container>
 
