@@ -130,7 +130,7 @@ export class MiembroAllComponent implements OnInit {
   }
 
   //* Método encargado de notificar si quiere o no marcar al miembro seleccionado como presente
-  showConfirmationBox(idMemberSelected: number, status: any, name: string, confirmado: any): void {
+  showConfirmationBox(idMemberSelected: number, status: boolean, name: string): void {
     if (!this.isConfirmBoxActive) {
       this.isConfirmBoxActive = !this.isConfirmBoxActive; //* Cambiamos el estado
       //* Declaramos las propiedades del confirm box
@@ -154,7 +154,7 @@ export class MiembroAllComponent implements OnInit {
       confirmBox.openConfirmBox$().subscribe(resp => {
         //* ¿Qué hacemos?
         if (resp.success) {
-          this.setPresente(idMemberSelected, status, name, confirmado);
+          this.setPresente(idMemberSelected, status, name);
         } else {
           this.notificacion.mensaje(
             'Miembro - Info',
@@ -168,35 +168,26 @@ export class MiembroAllComponent implements OnInit {
 
   //* Método encargado de cambiar a presente el usuario y debe registrar quién fue
   //* el usuario que lo colocó como presente
-  setPresente(idMember: number, estado: any, nombre: string, confirmado: any): void { //! CAMBIAR ESE ANY
+  setPresente(idMember: number, estado: boolean, nombre: string): void { 
     //? Si está como Inactivo no se puede marcar como presente
     //? Recuerde el botón de sí o no
     if (estado) {
       let currentDate: Date = new Date();
 
       //* preparamos la data para el update/put
-      const responseCreate: any = {
-        "event_id": Number(this.idEvent),
-        "member_id": idMember,
-        "confirmed": confirmado == true ? 1 : 0,
-        "date_time": currentDate,
-        "was_present": 1,
-        "id_usuario": this.currentUser.user.id
-      };
-
       const responseUpdate: any = {
-        "confirmed": confirmado == true ? 1 : 0,
-        "was_present": 1,
-        "id_usuario": this.currentUser.user.id
+        'was_present': 1,
+        'date_time': currentDate,
+        'id_usuario': this.currentUser.user.id,
+        'event_id' : this.idEvent,
+        'member_id': idMember
       };
 
-      //! Bug con member_id
-
-      console.log(responseCreate)
+      console.log(responseUpdate)
 
       //* Actualizar
       this.gService
-        .create('register-assistance', responseCreate)
+        .update('update-assistance', responseUpdate)
         .pipe(takeUntil(this.destroy$))
         .subscribe((data: any) => {
           console.log(data);
