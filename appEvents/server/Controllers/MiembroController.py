@@ -31,7 +31,7 @@ class MiembroController():
     def save_member(member:Miembro) -> None:
         insert_query = f"""
         INSERT INTO Miembro VALUES (
-            (SELECT dbo.fnGetMaxIdMember()), '{member.nombre_completo}', '{member.cedula}', {member.status}, '{member.correo}', {member.telefono})
+            (SELECT dbo.fnGetNextMaxIdMember()), '{member.nombre_completo}', '{member.cedula}', {member.status}, '{member.correo}', {member.telefono})
         """
         try:
             DBConnection.run_statement(insert_query)

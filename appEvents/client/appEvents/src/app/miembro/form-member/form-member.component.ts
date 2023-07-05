@@ -14,7 +14,7 @@ import { NotificacionService, TipoMessage } from 'src/app/share/notification.ser
 export class FormMemberComponent implements OnInit {
   titleForm: string = 'Añadir Miembro al Padrón'; //* El título que puede variar en función de un posible update/create
   currentUser: any; //* Información del usuario actual logeado en el sistema
-  isAutenticated : boolean; //* Propiedad encargada de manejar si el usuario está o no autenticado
+  isAutenticated: boolean; //* Propiedad encargada de manejar si el usuario está o no autenticado
   destroy$: Subject<boolean> = new Subject<boolean>(); //* Destruir la suscripción
   memberInfo: any; //* Respuesta del API ante un GET
   respMember: any; //* Respuesta del API a la hora de POST/PUT
@@ -67,8 +67,8 @@ export class FormMemberComponent implements OnInit {
     });
   }
 
-  ngAfterViewInit() : void{
-
+  ngAfterViewInit(): void {
+    this.loadUser();
   }
 
   //* id INT NOT NULL, 
@@ -126,10 +126,15 @@ export class FormMemberComponent implements OnInit {
   crearMiembro(): void {
     //* Verificar validación del form
     if (this.memberForm.invalid || !this.isAutenticated) {
+      this.notificacion.mensaje(
+        'Form - Miembro',
+        `Ha ocurrido un error con el formulario, por favor verificar todos los campos!!`,
+        TipoMessage.error
+      );
       return;
     }
 
-    //! Es necesario válidar que no exista alguien ya con esa cédula
+    //! Igualmente resulta necesario válidar que no exista alguien ya con esa cédula o correo electrónico
 
     //* Establecer submit verdadero
     this.submitted = true;
@@ -147,9 +152,6 @@ export class FormMemberComponent implements OnInit {
       .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
         //* Obtener la respuesta del
         this.respMember = data;
-        //! BORRAR
-        console.log('respuesta del form');
-        console.log(this.respMember);
         this.notificacion.mensaje(
           'Form - Miembro',
           `¡Se ha añadido el miembro ${this.memberForm.value.nombre_completo || ''} al padrón!`,
@@ -160,26 +162,24 @@ export class FormMemberComponent implements OnInit {
       });
   }
 
-  //* Registrar asistencia al evento
+  //* Método encargado de registrar asistencia al evento
   registerAssistance = (): void => {
     //* Formato del confirmado
     let confirmed: number = this.memberForm.value.confirmado == true ? 1 : 0;
+    //* Formato de la fecha default para el API
+    const dateNow = new Date();
     //* Respuesta que se le va a enviar al API en el formato solicitado
     const rspData: any = {
       event_id: this.idEvent,
-      member_id: this.memberForm.value.id,
+      //? member_id: this.memberForm.value.id, //? No se necesita en este caso
       confirmed: confirmed,
-      date_time: Date.now,
+      date_time: dateNow,
       was_present: 0, //* Default
       id_usuario: this.currentUser.user.id
-    }; 
-    //! BORRAR
-    console.log(rspData);
+    };
     this.gService.create('register-assistance', rspData)
       .pipe(takeUntil(this.destroy$)).
       subscribe((data: any) => {
-        //! BORRAR
-        console.log(`Respuesta del API register assistance ${data}`);
         this.onBack(); //* Regresamos!
       });
   }
