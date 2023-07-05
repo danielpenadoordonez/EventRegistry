@@ -47,7 +47,7 @@ export class FormEventoComponent implements OnInit {
   //* Propiedades para trabajar en el front
   minDate: Date; //* Fecha mínima
   maxDate: Date; //* Fecha máxima
-  stringFileInputError : string = ''; //* Propiedad encargada de manejar errores en el front
+  stringFileInputError: string = ''; //* Propiedad encargada de manejar errores en el front
 
   //? Encargado de controlar el text area
   @ViewChild('autosize') autosize: CdkTextareaAutosize;
@@ -180,13 +180,11 @@ export class FormEventoComponent implements OnInit {
   //* En caso de actualizar un evento
   //? SE HACE DISABLED DEL PADRÓN
   actualizarEvento(): void {
-    //! Si yo no toco la fecha o sea es igual no hay problema, pero si cambia debe acoplarse a las nuevas rules
     //* Si son iguales
     if (this.eventInfo.fecha == this.eventoForm.value.fecha) {
       this.eventoForm.get('fecha').removeValidators(Validators.required);
-      //* Igual pensar en max length o algo así
-      //* Si no un disabled o algo así
-    }
+    } else
+      this.eventoForm.get('fecha').addValidators(Validators.required);
 
     //* Verificar validación del formulario
     if (this.eventoForm.invalid) {
@@ -291,11 +289,33 @@ export class FormEventoComponent implements OnInit {
     console.log('Esto es lo que se enviaría al API');
     console.log(rspdata);
     // !
-    this.gService.create('update-padron', rspdata)
+    this.gService.create('load-padron', rspdata)
       .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
         //* Obtener respuesta
-        this.respExcel = data;
-        console.log(`Respuesta API EXCEL: \n ${this.respExcel}`)
+        this.respExcel = rspdata;
+        console.log(`Respuesta API EXCEL: \n ${data}`)
+        //* Llamamos al método para registrar la relación N:M
+        this.uploadMemberAssitance(this.respExcel.data);
+      });
+  }
+
+  //* Método encargado de enviar el array especial para la tabla N:M de asistencia de miembros
+  uploadMemberAssitance = (data: any): void => {
+    //* Preparamos lo que se va a enviar
+    let rspAssitance: [any];
+    let index: number = 0; //* Encargado de contar
+    for (let register of data) {
+      //! EL ID DEL EVENTO NO LO TENEMOS PÁ...
+      rspAssitance[index] = {'Id_Evento' : 1, 'Id_Member' : data[index].Id_member, 'Fecha_Hora' : Date.now(), 'Id_Usuario' : this.currentUser.user.id};
+      //* El resto de campos van a estar por default
+      index++; //* Contamos
+    }
+    //! Visualizamos
+    console.log('Respuesta de asistencia')
+    console.log(rspAssitance);
+    this.gService.create('load-asistencia', rspAssitance)
+      .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
+        console.log(`Respuesta del API registrar asistencia: \n ${data}`)
       });
   }
 
