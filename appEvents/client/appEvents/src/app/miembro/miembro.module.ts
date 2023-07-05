@@ -85,6 +85,6 @@ import { NgxMaskModule} from 'ngx-mask'
     ToastNotificationConfigModule.forRoot(),
     NgxMaskModule.forRoot()
   ],
-
+  bootstrap: [MiembroAllComponent]
 })
 export class MiembroModule { }

@@ -79,7 +79,8 @@ import {
         allowHtmlMessage: true,
       }
     }),
-    ToastNotificationConfigModule.forRoot()
-  ]
+    ToastNotificationConfigModule.forRoot(),
+  ],
+  bootstrap: [EventoAllComponent]
 })
 export class EventoModule { }
