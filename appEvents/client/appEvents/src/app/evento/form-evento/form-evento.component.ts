@@ -181,9 +181,11 @@ export class FormEventoComponent implements OnInit {
   //? SE HACE DISABLED DEL PADRÓN
   actualizarEvento(): void {
     //* Si son iguales
+    //! [required]="isCreate"
+
     if (this.eventInfo.fecha == this.eventoForm.value.fecha) {
       this.eventoForm.get('fecha').removeValidators(Validators.required);
-    } else
+    } else 
       this.eventoForm.get('fecha').addValidators(Validators.required);
 
     //* Verificar validación del formulario
@@ -301,8 +303,8 @@ export class FormEventoComponent implements OnInit {
         //! DESCOMENTAR
         //? this.uploadMemberAssitance(this.respExcel.data);
       });
-      //! BORRAR
-      this.uploadMemberAssitance(this.respExcel.data);
+    //! BORRAR
+    this.uploadMemberAssitance(this.respExcel.data);
   }
 
   //* Método encargado de enviar el array especial para la tabla N:M de asistencia de miembros
@@ -313,7 +315,7 @@ export class FormEventoComponent implements OnInit {
     for (let register of data) {
       //! EL ID DEL EVENTO NO LO TENEMOS PÁ...
       //? EN TODO CASO UNA SOLUCIÓN PODRÍA SER USAR EL STORE PROCEDURE
-      rspAssitance[index] = {'Id_Evento' : 1, 'Id_Member' : data[index].Id_member, 'Fecha_Hora' : Date.now(), 'Id_Usuario' : this.currentUser.user.id};
+      rspAssitance[index] = { 'Id_Evento': 1, 'Id_Member': data[index].Id_member, 'Fecha_Hora': Date.now(), 'Id_Usuario': this.currentUser.user.id };
       //* El resto de campos van a estar por default
       index++; //* Contamos
     }
