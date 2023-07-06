@@ -8,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GenericService } from 'src/app/share/generic.service';
 import { NotificacionService, TipoMessage } from 'src/app/share/notification.service';
 import { AppearanceAnimation, ConfirmBoxInitializer, DialogLayoutDisplay, DisappearanceAnimation } from '@costlydeveloper/ngx-awesome-popup';
+import { AuthenticationService } from 'src/app/share/authentication.service';
 
 @Component({
   selector: 'app-evento-all',
@@ -18,6 +19,8 @@ import { AppearanceAnimation, ConfirmBoxInitializer, DialogLayoutDisplay, Disapp
 export class EventoAllComponent implements AfterViewInit {
   datos: any; //* Data del API GET
   respBox: any; //* Data de la respuesta del confirm box
+  isAutenticated: boolean; //* Estado auténticado
+  currentUser: any; //* Usuario logeado
   isConfirmBoxActive: boolean = false; //* Sirve para manejar que no abuse de las confirm boxes
   destroy$: Subject<boolean> = new Subject<boolean>(); //* Destructor de tipo subject
   @ViewChild(MatPaginator) paginator!: MatPaginator; //* Páginación con Mat
@@ -29,7 +32,7 @@ export class EventoAllComponent implements AfterViewInit {
 
   constructor(private router: Router,
     private route: ActivatedRoute, private gService: GenericService,
-    private notificacion: NotificacionService, private location: Location) {
+    private notificacion: NotificacionService, private location: Location, private authService: AuthenticationService,) {
   }
 
   ngOnInit(): void {
@@ -47,6 +50,8 @@ export class EventoAllComponent implements AfterViewInit {
         TipoMessage.success
       );
     }
+    //* Cargamos al usuario
+    this.loadUser();
   }
 
   ngAfterViewInit(): void {
@@ -58,11 +63,17 @@ export class EventoAllComponent implements AfterViewInit {
     this.gService
       .list('get-events')
       .pipe(takeUntil(this.destroy$))
-      .subscribe((data: any) => {
-        //* Ordenamos por fecha
-        this.datos = data.events.sort((a: any, b: any) => a.fecha.getTime - b.fecha.getTime);
-        console.log('Sort data:');
-        console.log(this.datos);
+      .subscribe((data: any) => {   
+        //* Filtramos & asignamos en función del rol
+        if (this.currentUser.user.profile === 'Administrador' && this.isAutenticated) {
+          this.datos = data.events;
+        } else if(this.isAutenticated){
+          this.datos = data.events.filter((x: any) => x.usuario == this.currentUser.user.id);
+        }
+        //* Ordenamos la data por fecha
+        this.datos = this.datos.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
+        console.log(this.datos)
+        //* Establecemos la data al data source
         this.dataSource = new MatTableDataSource(this.datos);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
@@ -199,6 +210,17 @@ export class EventoAllComponent implements AfterViewInit {
       fechaActual.getTime() <= fechaEvento.getTime()) && abierto); //* la fecha actual es menor o igual a la del día del evento
 
     return !validadora;
+  }
+
+  //* Método para cargar la data del usuario
+  loadUser = (): void => {
+    //* Subscripción a la información del usuario actual
+    this.authService.currentUser.subscribe((x) => (this.currentUser = x));
+
+    //* Subscripción al booleano que indica si esta autenticado
+    this.authService.isAuthenticated.subscribe(
+      (valor) => (this.isAutenticated = valor)
+    );
   }
 
   //* Método encargado de refrescar la Data

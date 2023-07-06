@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GenericService } from 'src/app/share/generic.service';
 import { Subject, takeUntil } from 'rxjs';
 import { NotificacionService, TipoMessage } from 'src/app/share/notification.service';
+import { AuthenticationService } from 'src/app/share/authentication.service';
 
 @Component({
   selector: 'app-reporte-pdf',
@@ -15,11 +16,13 @@ import { NotificacionService, TipoMessage } from 'src/app/share/notification.ser
 export class ReportePdfComponent implements OnInit {
   datos: any; //* Datos del reporte
   idEvent: any; //* Identificador del evento
+  isAutenticated: boolean; //* Verifica si está autenticado o no
+  currentUser: any; //* Usuario actual en el sistema
   eventName: any; //* Variable encargada de guardar el nombre del evento en query params
   destroy$: Subject<boolean> = new Subject<boolean>(); //* Encargado de destruir la suscripción
 
   constructor(private gService: GenericService, private route: ActivatedRoute,
-    private notificacion: NotificacionService, private router: Router) {
+    private notificacion: NotificacionService, private router: Router, private authService: AuthenticationService,) {
     //* Constructor vacío
   }
 
@@ -37,6 +40,7 @@ export class ReportePdfComponent implements OnInit {
         this.eventName = this.route.snapshot.queryParams['name'] || ' ';
       }
     });
+    this.loadUser();
   }
 
   //* Sucede luego de cargar los params
@@ -64,17 +68,17 @@ export class ReportePdfComponent implements OnInit {
 
   //* Método encargado de notificar
   notification(valor: boolean): void {
-    if(valor){
+    if (valor) {
       this.notificacion.mensaje(
         `Reporte PDF - Evento`,
         `¡Se ha creado correctamente el reporte del evento ${': ' + this.eventName || this.idEvent}!`,
         TipoMessage.success
       );
-    } else{
+    } else {
       this.notificacion.mensaje(
         `Reporte PDF - Error`,
-        `¡El evento ingresado ${this.eventName != ' ' ? ': ' + this.eventName : ' '} aún no puede generar un reporte!`,
-        TipoMessage.error
+        `¡No se puede generar el reporte del evento: ${this.eventName != ' ' ? ': ' + this.eventName : ' '}!`,
+        TipoMessage.warning
       );
     }
   }
@@ -88,13 +92,16 @@ export class ReportePdfComponent implements OnInit {
           .pipe(takeUntil(this.destroy$))
           .subscribe((data: any) => {
             let result: any = data;
+            let usuario: number = data.id_Usuario;
             let currentDate: Date = new Date();
             let eventDate: Date = new Date(result.fecha);
             if (result) {
               //* Para generar un reporte tiene ser el mismo día o mayor o tiene que estar cerrado
               if ((currentDate.getMonth() == eventDate.getMonth() ? currentDate.getDate() >= (eventDate.getDate() + 1)
                 : currentDate.getTime() >= eventDate.getTime()) || (!result.abierto)) { //* O sea cerrado
-                resolve(true);
+                //* Además, tiene que pasar la aprobación del usuario
+                if (((this.currentUser.user.profile === 'Administrador') || (this.currentUser.user.id === usuario)) && (this.isAutenticated))
+                  resolve(true);
               }
             }
             resolve(false);
@@ -123,6 +130,18 @@ export class ReportePdfComponent implements OnInit {
       PDF.addImage(FILEURI, 'PNG', 0, position, fileWidth, fileHeight);
       PDF.save(`reportEvent${this.eventName || this.idEvent}.pdf`);
     });
+  }
+
+  //* Función encargada de cargar la data del usuario
+  loadUser(): void {
+    //* Subscripción a la información del usuario actual
+    this.authService.currentUser.subscribe((x) => (this.currentUser = x));
+    //? Este mismo será necesario para válidar en el HTML
+
+    //* Subscripción al booleano que indica si esta autenticado
+    this.authService.isAuthenticated.subscribe(
+      (valor) => (this.isAutenticated = valor)
+    );
   }
 
   //* Método para regresar a la ventana anterior, como en padrón
