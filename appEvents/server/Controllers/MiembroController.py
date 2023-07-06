@@ -6,7 +6,7 @@ class MiembroController():
     @staticmethod
     def get_members_on_event(event_id:int) -> list:
         select_query = f"""
-        SELECT a.Id_Miembro, m.NombreCompleto, m.NumeroCedula, m.Estatus1, m.Correo, m.Telefono, a.confirmado
+        SELECT a.Id_Miembro, m.NombreCompleto, m.NumeroCedula, m.Estatus1, m.Correo, m.Telefono, a.confirmado, a.presente
         FROM AsistenciaEvento a, Miembro m
         WHERE a.Id_Evento = {event_id} AND a.Id_Miembro = m.id
         """
@@ -22,6 +22,7 @@ class MiembroController():
                 member.correo = result[4]
                 member.telefono = result[5]
                 member.confirmado = result[6]
+                member.presente = result[7]
                 members.append(member.__dict__)
         except:
             raise

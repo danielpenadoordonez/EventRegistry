@@ -103,7 +103,7 @@ export class FormMemberComponent implements OnInit {
         Validators.required, Validators.minLength(8), Validators.maxLength(50), Validators.pattern(/[0-9]{4}[0-9]{2}[0-9]{3}$/)])
       ],
       //? Checkbox
-      confirmado: [null, Validators.requiredTrue],
+      confirmado: [null], //? Validators.requiredTrue
     });
   }
 
@@ -139,12 +139,12 @@ export class FormMemberComponent implements OnInit {
     //* Establecer submit verdadero
     this.submitted = true;
 
-    //* patch de estado     this.videojuegoForm.patchValue({ generos:gFormat});
+    //* Set values de estado     this.videojuegoForm.patchValue({ generos:gFormat});
     let stateValue: number = this.memberForm.value.status == true ? 1 : 0;
 
-    //? Es necesario inster a confirmado en la N:M Confirmado NECESITA cast en el back
+    //? Es necesario settear el id del usuario, ya que el del evento va por default en la carga
 
-    this.memberForm.patchValue({ status: stateValue });
+    this.memberForm.get('status').setValue(stateValue);
 
     console.log(this.memberForm.value);
     //* Acción API create enviando toda la informacion del formulario

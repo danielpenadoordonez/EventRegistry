@@ -56,11 +56,13 @@ class EventController():
                            SET Nombre = '{event.nombre}',
                                Descripcion = '{event.descripcion}',
                                Id_Usuario = {event.id_Usuario},
-                               Fecha = '{event.fecha}',
-                               Abierto = {event.abierto}
+                               Fecha = '{event.fecha}'
                             WHERE Id = {event.id}"""
         try:
             DBConnection.run_statement(update_query)
             return EventController.get_event_from_db(event.id)
         except:
             raise
+        
+        # Para cerrar es necesario otro update distinto, que solo cierre y ya
+        # Abierto = {event.abierto}

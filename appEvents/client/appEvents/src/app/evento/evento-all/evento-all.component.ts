@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ViewChild, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -28,7 +29,7 @@ export class EventoAllComponent implements AfterViewInit {
 
   constructor(private router: Router,
     private route: ActivatedRoute, private gService: GenericService,
-    private notificacion: NotificacionService) {
+    private notificacion: NotificacionService, private location: Location) {
   }
 
   ngOnInit(): void {
@@ -99,7 +100,11 @@ export class EventoAllComponent implements AfterViewInit {
     this.gService.update('close-event', idEvent).pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
       //* Obtener la data
       console.log(data);
-      //! Notificación de cerrado 
+      this.notificacion.mensaje(
+        'Evento - Info',
+        `Se ha cerrado exitosamente el evento: ${nombreEvento}`,
+        TipoMessage.success
+      );
     });
 
     this.notificacion.mensaje(
@@ -121,7 +126,6 @@ export class EventoAllComponent implements AfterViewInit {
   }
 
   //* Desplegar el confirmbox para saber si quiere o no cerrar el evento
-  //! No tiene diseño aún, ocupa bootstrap, pero no tengo tiempo
   confirmBoxCerrarEvento(id: any, nombre: string): void {
     if (!this.isConfirmBoxActive) {
       this.isConfirmBoxActive = !this.isConfirmBoxActive; //* Cambiamos el estado
@@ -199,18 +203,7 @@ export class EventoAllComponent implements AfterViewInit {
 
   //* Método encargado de refrescar la Data
   refreshData(): void {
-    this.gService
-      .list('get-eventos/')
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data: any) => {
-        this.datos = data.sort((a, b) => a.date.getTime() - b.date.getTime());
-        this.dataSource = new MatTableDataSource(this.datos);
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    //* Si no un refresh page de los normales
-    //? this.location.reload();
-    //? private location: Location -> Constructor
+    window.location.reload();
   }
 
 }

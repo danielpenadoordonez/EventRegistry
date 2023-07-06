@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Location } from '@angular/common';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -32,7 +33,7 @@ export class MiembroAllComponent implements OnInit {
 
   constructor(private router: Router,
     private route: ActivatedRoute, private gService: GenericService, private notificacion: NotificacionService,
-    private authService: AuthenticationService) {
+    private authService: AuthenticationService, private location: Location) {
   } //* Constructor vacío
 
   //* Método encargado de cargar el id event 
@@ -89,7 +90,6 @@ export class MiembroAllComponent implements OnInit {
       .get('members-by-event', `event=${this.idEvent}`)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
-        console.log(data);
         this.datos = data.members;
         this.dataSource = new MatTableDataSource(this.datos);
         this.dataSource.sort = this.sort;
@@ -168,7 +168,7 @@ export class MiembroAllComponent implements OnInit {
 
   //* Método encargado de cambiar a presente el usuario y debe registrar quién fue
   //* el usuario que lo colocó como presente
-  setPresente(idMember: number, estado: boolean, nombre: string): void { 
+  setPresente(idMember: number, estado: boolean, nombre: string): void {
     //? Si está como Inactivo no se puede marcar como presente
     //? Recuerde el botón de sí o no
     if (estado) {
@@ -176,29 +176,28 @@ export class MiembroAllComponent implements OnInit {
 
       //* preparamos la data para el update/put
       const responseUpdate: any = {
-        'was_present': 1,
-        'date_time': currentDate,
-        'id_usuario': this.currentUser.user.id,
-        'event_id' : this.idEvent,
-        'member_id': idMember
+        was_present: 1,
+        date_time: currentDate,
+        id_usuario: parseInt(this.currentUser.user.id) //* Transformamos a int
       };
 
       console.log(responseUpdate)
 
       //* Actualizar
       this.gService
-        .update('update-assistance', responseUpdate)
+        .put('update-assistance', `event_id=${this.idEvent}&member_id=${idMember}`, responseUpdate)
         .pipe(takeUntil(this.destroy$))
         .subscribe((data: any) => {
           console.log(data);
+          //* Notificar
+          this.notificacion.mensaje(
+            'Padrón - Presente',
+            `Se ha confirmado la asistencia del miembro ${nombre.toLowerCase().split(" ")[0]}`,
+            TipoMessage.info
+          );
+          //* Refrescamos
+          this.onRefresh();
         });
-
-      //* Notificar
-      this.notificacion.mensaje(
-        'Padrón - Presente',
-        `Se ha confirmado la asistencia del miembro ${nombre.toLowerCase().split(" ")[0]}`,
-        TipoMessage.info
-      );
     } else {
       //* Notificar
       this.notificacion.mensaje(
@@ -236,5 +235,10 @@ export class MiembroAllComponent implements OnInit {
   onBack(): void {
     this.router.navigate(['evento/all']);
   }
+
+  //* Método encargado de refrescar la página tras confirmar una asistencia
+  onRefresh = (): void => {
+    window.location.reload();
+  };
 
 }
