@@ -59,8 +59,20 @@ export class EventoIndexComponent implements OnInit {
   listaEventos(): void {
     this.gSevice.list('get-events').pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
+        //* Filtramos & asignamos en función del rol
+        if (this.currentUser.user.profile === 'Administrador' && this.isAutenticated) {
+          //? Administrador puede ver todos, estén expirados o no
+          this.datos = data.events;
+        } else if (this.isAutenticated) {
+          //? Pueden ver todos mientras no hayan expirado pá
+          const currentDate = new Date(); //* Fecha de hoy
+          const daysToAdd = -1; //* Le restamos uno, ya que va 1 día atrás y ocupamos emparejar
+
+          currentDate.setDate(currentDate.getDate() + daysToAdd);
+          this.datos = data.events.filter((event: any) => new Date(event.fecha) >= currentDate);
+        }
         //* Ordenamos la data
-        this.datos = data.events.sort((a: any, b: any) => a.fecha.getTime - b.fecha.getTime);
+        this.datos = this.datos.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
       });
   }
 
