@@ -202,6 +202,9 @@ export class FormEventoComponent implements OnInit {
     //! El usuario no se actualiza, ni id, ni estado
     //? Puedo actualizar fecha, nombre y descripción [FRONT]
 
+    //! Parcheamos valores REVISAR CON EL BACK
+    this.eventoForm.get('id_usuario').setValue(this.currentUser.user.id);
+
     this.gService.update('update-event?event_id=', this.eventoForm.value)
       .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
         //* Obtener respuesta del API

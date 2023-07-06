@@ -18,7 +18,7 @@ export class GenericService {
 
   }
 
- //! Es vital el ? cuando hayan filtros
+  //! Es vital el ? cuando hayan filtros
 
   //* Listar [GET ALL]
   list(endopoint: string): Observable<any> {
@@ -35,12 +35,14 @@ export class GenericService {
     return this.http.post<any | any[]>(this.urlAPI + endopoint, objCreate);
   }
 
-  //* Actualizar
+  //* Actualizar - PUT, not update, id param
   update(endopoint: string, objUpdate: any | any): Observable<any | any[]> {
-    return this.http.put<any | any[]>(
-      this.urlAPI + endopoint + `${objUpdate.id}`,
-      objUpdate
-    );
+    return this.http.put<any | any[]>(this.urlAPI + endopoint + `${objUpdate.id}`, objUpdate);
+  }
+
+  //* Actualizar - PUT, empleando custom query params
+  put(endopoint: string, queryParams: string, objUpdate: any | any): Observable<any | any[]> {
+    return this.http.put<any | any[]>(this.urlAPI + endopoint + `?${queryParams}`, objUpdate);
   }
 
 }

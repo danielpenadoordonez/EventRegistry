@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Location } from '@angular/common';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -32,7 +33,7 @@ export class MiembroAllComponent implements OnInit {
 
   constructor(private router: Router,
     private route: ActivatedRoute, private gService: GenericService, private notificacion: NotificacionService,
-    private authService: AuthenticationService) {
+    private authService: AuthenticationService, private location: Location) {
   } //* Constructor vacío
 
   //* Método encargado de cargar el id event 
@@ -89,7 +90,6 @@ export class MiembroAllComponent implements OnInit {
       .get('members-by-event', `event=${this.idEvent}`)
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: any) => {
-        console.log(data);
         this.datos = data.members;
         this.dataSource = new MatTableDataSource(this.datos);
         this.dataSource.sort = this.sort;
@@ -130,7 +130,7 @@ export class MiembroAllComponent implements OnInit {
   }
 
   //* Método encargado de notificar si quiere o no marcar al miembro seleccionado como presente
-  showConfirmationBox(idMemberSelected: number, status: any, name: string, confirmado: any): void {
+  showConfirmationBox(idMemberSelected: number, status: boolean, name: string): void {
     if (!this.isConfirmBoxActive) {
       this.isConfirmBoxActive = !this.isConfirmBoxActive; //* Cambiamos el estado
       //* Declaramos las propiedades del confirm box
@@ -154,7 +154,7 @@ export class MiembroAllComponent implements OnInit {
       confirmBox.openConfirmBox$().subscribe(resp => {
         //* ¿Qué hacemos?
         if (resp.success) {
-          this.setPresente(idMemberSelected, status, name, confirmado);
+          this.setPresente(idMemberSelected, status, name);
         } else {
           this.notificacion.mensaje(
             'Miembro - Info',
@@ -168,46 +168,36 @@ export class MiembroAllComponent implements OnInit {
 
   //* Método encargado de cambiar a presente el usuario y debe registrar quién fue
   //* el usuario que lo colocó como presente
-  setPresente(idMember: number, estado: any, nombre: string, confirmado: any): void { //! CAMBIAR ESE ANY
+  setPresente(idMember: number, estado: boolean, nombre: string): void {
     //? Si está como Inactivo no se puede marcar como presente
     //? Recuerde el botón de sí o no
     if (estado) {
       let currentDate: Date = new Date();
 
       //* preparamos la data para el update/put
-      const responseCreate: any = {
-        "event_id": Number(this.idEvent),
-        "member_id": idMember,
-        "confirmed": confirmado == true ? 1 : 0,
-        "date_time": currentDate,
-        "was_present": 1,
-        "id_usuario": this.currentUser.user.id
-      };
-
       const responseUpdate: any = {
-        "confirmed": confirmado == true ? 1 : 0,
-        "was_present": 1,
-        "id_usuario": this.currentUser.user.id
+        was_present: 1,
+        date_time: currentDate,
+        id_usuario: parseInt(this.currentUser.user.id) //* Transformamos a int
       };
 
-      //! Bug con member_id
-
-      console.log(responseCreate)
+      console.log(responseUpdate)
 
       //* Actualizar
       this.gService
-        .create('register-assistance', responseCreate)
+        .put('update-assistance', `event_id=${this.idEvent}&member_id=${idMember}`, responseUpdate)
         .pipe(takeUntil(this.destroy$))
         .subscribe((data: any) => {
           console.log(data);
+          //* Notificar
+          this.notificacion.mensaje(
+            'Padrón - Presente',
+            `Se ha confirmado la asistencia del miembro ${nombre.toLowerCase().split(" ")[0]}`,
+            TipoMessage.info
+          );
+          //* Refrescamos
+          this.onRefresh();
         });
-
-      //* Notificar
-      this.notificacion.mensaje(
-        'Padrón - Presente',
-        `Se ha confirmado la asistencia del miembro ${nombre.toLowerCase().split(" ")[0]}`,
-        TipoMessage.info
-      );
     } else {
       //* Notificar
       this.notificacion.mensaje(
@@ -245,5 +235,10 @@ export class MiembroAllComponent implements OnInit {
   onBack(): void {
     this.router.navigate(['evento/all']);
   }
+
+  //* Método encargado de refrescar la página tras confirmar una asistencia
+  onRefresh = (): void => {
+    window.location.reload();
+  };
 
 }
