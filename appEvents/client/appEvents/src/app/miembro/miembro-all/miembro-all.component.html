@@ -12,6 +12,11 @@
       <mat-icon>note_add</mat-icon>
     </a>
   </mat-card-title>
+  <div class="align-content-md-center" *ngIf="datos ? datos.length <= 0 : false">
+    <i class="bx bxs-no-entry bx-tada"></i>
+    ¡Lo sentimos, no se han encontrado miembros registrados en este evento!
+    <i class="bx bxs-no-entry bx-tada"></i>
+  </div>
   <mat-card-content>
     <div class="mat-elevation-z8" *ngIf="dataSource">
       <table
@@ -171,6 +176,7 @@
               (click)="
                 showConfirmationBox(row.id, row.status, row.nombre_completo)
               "
+              *ngIf="row.presente != 1"
             >
               <mat-icon class="mat-18">check_circle_outline</mat-icon>
             </button>

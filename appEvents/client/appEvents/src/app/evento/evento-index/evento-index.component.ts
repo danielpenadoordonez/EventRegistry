@@ -105,4 +105,27 @@ export class EventoIndexComponent implements OnInit {
     );
   }
 
+  //* Método encargado de válidar si se puede editar o no un evento
+  //* Recibe la fecha desde el front y el abierto, que es boolean por venir del api
+  isEditAvailable = (fecha: string, abierto: boolean, idUser: number): boolean => {
+    let validadora: boolean = false; //* Variable encargada de válidar, empieza en false por seguridad
+    //? Va a ser editable, antes del día del evento, a partir de ese día y posteriores ya no lo será
+    let fechaActual: Date = new Date();
+    //* OJO, RECUERDE QUE JS SIEMPRE RESTA 1 DÍA A LAS FECHAS QUE VIENEN POR STRING
+    let fechaEvento: Date = new Date(fecha);
+
+    const daysToAdd = 1; //* Fijamos el número de días a añadir
+
+    fechaEvento.setDate(fechaEvento.getDate() + daysToAdd); //* Añadimos los días
+
+    //* Si es admin pasa por aquí directamente o que el id del usuario sea el mismo y entonces, puede editar
+    if (this.currentUser.user.profile === 'Administrador' || idUser === this.currentUser.user.id) {
+      //* Muy importante que esté abierto, en caso de estarlo retornará true
+      validadora = ((fechaActual.getMonth() == fechaEvento.getMonth() ? fechaEvento.getDate() < fechaActual.getDate() :
+        fechaEvento.getTime() < fechaActual.getTime()) && abierto);
+    }
+
+    return validadora;
+  }
+
 }
