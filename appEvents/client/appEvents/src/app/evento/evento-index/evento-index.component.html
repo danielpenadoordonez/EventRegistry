@@ -34,7 +34,7 @@
             aria-label="Editar la información del evento"
             title="Editar la información del evento"
             (click)="editarEvento(evento.event_id)"
-            *ngIf="evento.abierto == 1"
+            *ngIf="isEditAvailable(evento.fecha, evento.abierto, evento.usuario)"
           >
             <!-- ? Que el evento esté abierto y sea administrador -->
             <mat-icon class="mat-18">border_color</mat-icon>
@@ -43,5 +43,4 @@
       </mat-card>
     </mat-grid-tile>
   </mat-grid-list>
-  <!-- ! ngIf="currentUser.perfil == 'Admnistrador'" -->
 </div>
