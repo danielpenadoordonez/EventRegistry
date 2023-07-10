@@ -176,7 +176,7 @@
               (click)="
                 showConfirmationBox(row.id, row.status, row.nombre_completo)
               "
-              *ngIf="row.presente != 1"
+              [disabled]="row.presente == 1"
             >
               <mat-icon class="mat-18">check_circle_outline</mat-icon>
             </button>
