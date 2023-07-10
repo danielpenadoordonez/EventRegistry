@@ -121,8 +121,8 @@ export class EventoIndexComponent implements OnInit {
     //* Si es admin pasa por aquí directamente o que el id del usuario sea el mismo y entonces, puede editar
     if (this.currentUser.user.profile === 'Administrador' || idUser === this.currentUser.user.id) {
       //* Muy importante que esté abierto, en caso de estarlo retornará true
-      validadora = ((fechaActual.getMonth() == fechaEvento.getMonth() ? fechaEvento.getDate() < fechaActual.getDate() :
-        fechaEvento.getTime() < fechaActual.getTime()) && abierto);
+      validadora = ((fechaActual.getMonth() == fechaEvento.getMonth() ? fechaEvento.getDate() > fechaActual.getDate() :
+        fechaEvento.getTime() > fechaActual.getTime()) && abierto);
     }
 
     return validadora;
