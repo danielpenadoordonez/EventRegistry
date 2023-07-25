@@ -206,6 +206,7 @@ export class FormEventoComponent implements OnInit {
 
     //! Parcheamos valores REVISAR CON EL BACK
     this.eventoForm.get('id_usuario').setValue(this.currentUser.user.id);
+    this.eventoForm.get('abierto').setValue(1); //* Establecemos el evento como abierto, puesto que solo puedo editar eventos abiertos
 
     this.gService.update('update-event?event_id=', this.eventoForm.value)
       .pipe(takeUntil(this.destroy$)).subscribe((data: any) => {

@@ -63,11 +63,11 @@ export class EventoAllComponent implements AfterViewInit {
     this.gService
       .list('get-events')
       .pipe(takeUntil(this.destroy$))
-      .subscribe((data: any) => {   
+      .subscribe((data: any) => {
         //* Filtramos & asignamos en función del rol
         if (this.currentUser.user.profile === 'Administrador' && this.isAutenticated) {
           this.datos = data.events;
-        } else if(this.isAutenticated){
+        } else if (this.isAutenticated) {
           this.datos = data.events.filter((x: any) => x.usuario == this.currentUser.user.id);
         }
         //* Ordenamos la data por fecha
@@ -106,27 +106,6 @@ export class EventoAllComponent implements AfterViewInit {
     });
   }
 
-  //* Cerrar evento, llama a un API que actualiza el estado del evento
-  cerrarEvento(idEvent: number, nombreEvento: string): void {
-    this.gService.update('close-event', idEvent).pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
-      //* Obtener la data
-      console.log(data);
-      this.notificacion.mensaje(
-        'Evento - Info',
-        `Se ha cerrado exitosamente el evento: ${nombreEvento}`,
-        TipoMessage.success
-      );
-    });
-
-    this.notificacion.mensaje(
-      `Evento`,
-      `¡Se ha cerrado el evento: ${nombreEvento}!`,
-      TipoMessage.success
-    );
-
-    this.refreshData(); //* Por si acaso
-  }
-
   //* Generar reporte del evento
   generarReporte(idEvent: number, nombreEvento: string): void {
     this.router.navigate(['/member/reportePdf/', idEvent], {
@@ -136,8 +115,29 @@ export class EventoAllComponent implements AfterViewInit {
     });
   }
 
+  //* Cerrar evento, llama a un API que actualiza el estado del evento
+  cerrarEvento(idEvent: number, nombreEvento: string, descripcion: string, fecha: Date): void {
+    const api_data: any = { //* Constante con toda la data necesaria para el api
+      id: idEvent,
+      id_usuario: this.currentUser.user.id,
+      nombre: nombreEvento,
+      descripcion: descripcion,
+      fecha: fecha,
+      abierto: 0 //! IMPORTANTE PUESTO QUE SE CIERRA
+    };
+    this.gService.update('update-event?event_id=', api_data).pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
+      //* Obtener la data
+      this.notificacion.mensaje(
+        'Evento - Info',
+        `Se ha cerrado exitosamente el evento: ${nombreEvento}`,
+        TipoMessage.success
+      );
+    });
+    this.refreshData(); //* Necesario para refrescar la página
+  }
+
   //* Desplegar el confirmbox para saber si quiere o no cerrar el evento
-  confirmBoxCerrarEvento(id: any, nombre: string): void {
+  confirmBoxCerrarEvento(id: any, nombre: string, descripcion : string, fecha : Date): void {
     if (!this.isConfirmBoxActive) {
       this.isConfirmBoxActive = !this.isConfirmBoxActive; //* Cambiamos el estado
 
@@ -162,12 +162,8 @@ export class EventoAllComponent implements AfterViewInit {
       confirmBox.openConfirmBox$().subscribe(resp => {
         this.isConfirmBoxActive = !this.isConfirmBoxActive; //* Cambiamos de nuevo
         if (resp.success) {
-          this.notificacion.mensaje(
-            'Evento',
-            `Se ha cerrado exitosamente el evento ${nombre}`,
-            TipoMessage.info
-          );
-          this.cerrarEvento(id, nombre);
+          //* Método encargado de cerrar el evento
+          this.cerrarEvento(id, nombre, descripcion, fecha);
         } else {
           this.notificacion.mensaje(
             'Evento',
