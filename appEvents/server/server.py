@@ -177,6 +177,14 @@ def update_assistance():
     AssistenceController.update_assistance(assistance)
     return jsonify({200: "Success"})
 
+@server.route('/assistance-report', methods = ['GET'])
+@cross_origin(origin="*", headers=["Content-Type"])
+def get_assistance_for_report():
+    params = request.args
+
+    event_id = int(params.get('event'))
+    assistance_from_event = AssistenceController.get_assistance_for_report(event_id)
+    return jsonify({event_id : assistance_from_event})
 
 if __name__ == "__main__":
     server.run(host='0.0.0.0', port=8080)
