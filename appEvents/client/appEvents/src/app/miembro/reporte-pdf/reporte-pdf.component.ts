@@ -50,20 +50,24 @@ export class ReportePdfComponent implements OnInit {
     this.notification(valor);
 
     if (valor) {
-      //? quitar comentario
-      //! this.listaMiembrosPadron(); //* Cargamos la lista
+      this.listaMiembrosPadron(); //* Cargamos la lista de miembros del reporte
     } else
       this.onBack(); //* Redirigimos
   }
 
   //* Carga la lista de los miembros asistentes a X evento y otros datos
   listaMiembrosPadron(): void {
-    this.gService
-      .get('members-padron', `event_id=${this.idEvent}`)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data: any) => {
-        this.datos = data;
-      });
+    //? Por motivos de rendimiento, se coloca un pequeño timeout
+    setTimeout(() => {
+      this.gService
+        .get('assistance-report', `event=${this.idEvent}`)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((data: any) => {
+          this.datos = data[this.idEvent];
+          console.log('data del reporte')
+          console.log(data[this.idEvent]);
+        });
+    }, 100);
   }
 
   //* Método encargado de notificar

@@ -25,20 +25,20 @@
                 </thead>
                 <tbody>
                   <!-- * Cargamos la data del PDF aquí -->
-                  <!-- <tr *ngFor="let register of datos">
+                  <tr *ngFor="let register of datos">
                     <th scope="row" class="scope">
-                      {{ register.numeroCedula }}
+                      {{ register.cedula }}
                     </th>
-                    <th class="border-bottom-0">{{ register.nombre }}</th>
+                    <th class="border-bottom-0">{{ register.miembro }}</th>
                     <td class="border-bottom-0">
-                      {{ register.fecha | date : "shortTime" }}
+                      {{ register.fecha | date : "mediumDate" }}
                     </td>
                     <td class="border-bottom-0">
                       {{ register.fecha | date : "shortTime" }}
                     </td>
-                    <td class="border-bottom-0">{{ register.confirmado }}</td>
-                    <td class="border-bottom-0">{{ register.user }}</td>
-                  </tr> -->
+                    <td class="border-bottom-0">{{ register?.confirmado == true ? 'Sí' : 'No' ?? 'Indefinido'}}</td>
+                    <td class="border-bottom-0">{{ register.usuario_registrador }}</td>
+                  </tr> 
                 </tbody>
               </table>
             </div>
