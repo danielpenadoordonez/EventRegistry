@@ -64,8 +64,6 @@ export class ReportePdfComponent implements OnInit {
         .pipe(takeUntil(this.destroy$))
         .subscribe((data: any) => {
           this.datos = data[this.idEvent];
-          console.log('data del reporte')
-          console.log(data[this.idEvent]);
         });
     }, 100);
   }
