@@ -191,8 +191,8 @@ export class EventoAllComponent implements AfterViewInit {
     let validadora: boolean = true;
     let fechaActual: Date = new Date();
     let fechaEvento: Date = new Date(fecha);
-    validadora = fechaActual.getMonth() == this.addDays(fechaEvento, 1).getMonth() ? (fechaActual.getDate() > this.addDays(fechaEvento, 1).getDate()) :
-    (fechaActual.getTime() > this.addDays(fechaEvento, 1).getTime()) && abierto;
+    validadora = (fechaActual.getMonth() == this.addDays(fechaEvento, 1).getMonth() ? (fechaActual.getDate() > this.addDays(fechaEvento, 1).getDate()) :
+    (fechaActual.getTime() > this.addDays(fechaEvento, 1).getTime())) && abierto;
     //* Es mayor o sea ya pasó
 
     return !validadora;
