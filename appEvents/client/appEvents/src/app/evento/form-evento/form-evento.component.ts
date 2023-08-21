@@ -185,7 +185,7 @@ export class FormEventoComponent implements OnInit {
 
     if (this.eventInfo.fecha == this.eventoForm.value.fecha) {
       this.eventoForm.get('fecha').removeValidators(Validators.required);
-    } else 
+    } else
       this.eventoForm.get('fecha').addValidators(Validators.required);
 
     //* Verificar validación del formulario
@@ -305,7 +305,7 @@ export class FormEventoComponent implements OnInit {
         //? this.uploadMemberAssitance(this.respExcel.data);
       });
     //! BORRAR
-    this.uploadMemberAssitance(this.respExcel.data);
+    //this.uploadMemberAssitance(this.respExcel.data);
   }
 
   //* Método encargado de enviar el array especial para la tabla N:M de asistencia de miembros

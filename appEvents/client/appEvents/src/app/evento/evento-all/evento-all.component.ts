@@ -182,7 +182,7 @@ export class EventoAllComponent implements AfterViewInit {
     let validadora: boolean = true;
     let fechaActual: Date = new Date();
     let fechaEvento: Date = new Date(fecha);
-    validadora = (fechaActual.getTime() >= fechaEvento.getTime()); //* >= o sea incluye el mismo día y los anteriores o está cerrado
+    validadora = (fechaActual.getTime() >= this.addDays(fechaEvento, 1).getTime()); //* >= o sea incluye el mismo día y los anteriores o está cerrado
 
     return !validadora; //* Se invierte el valor al ser un disabled
   }
@@ -191,21 +191,33 @@ export class EventoAllComponent implements AfterViewInit {
     let validadora: boolean = true;
     let fechaActual: Date = new Date();
     let fechaEvento: Date = new Date(fecha);
-    validadora = (fechaActual.getTime() > fechaEvento.getTime()) && abierto; //* Es mayor o sea ya pasó 1 día al menos y está abierto
-    //* en cuanto al estado tiene que ser distinto de 0 o sea cerrado
+    validadora = fechaActual.getMonth() == this.addDays(fechaEvento, 1).getMonth() ? (fechaActual.getDate() > this.addDays(fechaEvento, 1).getDate()) :
+    (fechaActual.getTime() > this.addDays(fechaEvento, 1).getTime()) && abierto;
+    //* Es mayor o sea ya pasó
 
     return !validadora;
   }
 
   //* Validación sobre el padrón
+  //? Solamente disponible si es el mismo día
   isPadronAvailable(abierto: boolean, fecha: any): boolean {
     let validadora: boolean = true; //* Inicializamos en false la variable o sea debería estar bien
     let fechaActual: Date = new Date();
     let fechaEvento: Date = new Date(fecha);
-    validadora = ((fechaActual.getMonth() == fechaEvento.getMonth() ? fechaActual.getDate() <= (fechaEvento.getDate() + 1) :
-      fechaActual.getTime() <= fechaEvento.getTime()) && abierto); //* la fecha actual es menor o igual a la del día del evento
+    //validadora = (fechaActual.getDate() <= this.addDays(fechaEvento, 1).getDate());
+      //! la fecha actual es menor o igual a la del día del evento - Removido
+
+    validadora = (fechaActual.getMonth() == fechaEvento.getMonth() && fechaActual.getDate() == this.addDays(fechaEvento, 1).getDate() && abierto);
+    //? Solamente si es el mismo día
 
     return !validadora;
+  }
+
+  //* Método encargado de sumar o restar días a una fecha, ya dependerá de como se use
+  addDays = (fecha: Date, dias: number): Date => {
+    const fechaModificada = new Date(fecha);
+    fechaModificada.setDate(fechaModificada.getDate() + dias);
+    return fechaModificada;
   }
 
   //* Método para cargar la data del usuario

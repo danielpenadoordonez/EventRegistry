@@ -23,7 +23,7 @@ export class AuthenticationService {
   private authenticated = new BehaviorSubject<boolean>(false);
   //* Inyectar cliente HTTP para las solicitudes al API
 
-//* private cartService:CartService
+  //* private cartService:CartService
   constructor(private http: HttpClient) {
     //* Obtener los datos del usuario en localStorage, si existe
     this.currentUserSubject = new BehaviorSubject<any>(
@@ -59,7 +59,7 @@ export class AuthenticationService {
   //* Login
   loginUser(user: any): Observable<any> {
     return this.http
-    //! OJO A LA RUTA API Y ENVIROMENT 
+      //! OJO A LA RUTA API Y ENVIROMENT
       .get<any>(this.ServerUrl + `login?username=${user.username}&password=${user.password}`)
       .pipe(
         map((user) => {
@@ -68,7 +68,7 @@ export class AuthenticationService {
           //! Formato para el local storage
           const profiles = ['Administrador', 'Moderador', 'Miembro'];
           const userData = {
-            "user":{
+            "user": {
               "id": user.id,
               "username": user.username,
               "profile": profiles[user.id_perfil - 1],
@@ -88,16 +88,18 @@ export class AuthenticationService {
     let usuario = this.currentUserSubject.value;
     if (usuario) {
       //* Eliminar usuario del almacenamiento local para cerrar la sesión del usuario
-      localStorage.removeItem('currentUser');
-      //* Eliminarlo del observable del usuario actual
-      this.currentUserSubject.next(null);
-      //* Eliminarlo del observable del boleano si esta autenticado
-      this.authenticated.next(false);
-      //* Eliminar carrito [Sin uso]
-      //* this.cartService.deleteCart();
+      if (localStorage.getItem('currentUser') !== null) {
+        localStorage.removeItem('currentUser');
+        //* Eliminarlo del observable del usuario actual
+        this.currentUserSubject.next(null);
+        //* Eliminarlo del observable del boleano si esta autenticado
+        this.authenticated.next(false);
+        //* Eliminar carrito [Sin uso]
+        //* this.cartService.deleteCart();
+      }
       return true;
     }
     return false;
   }
- 
+
 }
